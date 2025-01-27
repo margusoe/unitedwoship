@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:unitedwoship/screens/add_song_screen.dart';
+import 'package:unitedwoship/screens/add_song/add_song_screen.dart';
 import 'package:unitedwoship/screens/song_screen.dart';
 
 class HomeScreen extends StatelessWidget {

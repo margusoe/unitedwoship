@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:unitedwoship/screens/add_song/add_song_manager.dart';
 
 class AddSongScreen extends StatefulWidget {
   const AddSongScreen({super.key});
@@ -8,6 +9,7 @@ class AddSongScreen extends StatefulWidget {
 }
 
 class _AddSongScreenState extends State<AddSongScreen> {
+  final _manager = AddSongManager();
   final TextEditingController _textController = TextEditingController();
   final List<String> _chords = [
     'A',
@@ -63,6 +65,13 @@ class _AddSongScreenState extends State<AddSongScreen> {
 
   void _saveSong() {
     if (_textController.text.isNotEmpty) {
+      _manager.addSong(
+        songName: "songName",
+        composer: "composer",
+        lyricAuthor: "lyricAuthor",
+        originalKey: "originalKey",
+        lyrics: _textController.text,
+      );
       Navigator.pop(context, _textController.text);
     }
   }

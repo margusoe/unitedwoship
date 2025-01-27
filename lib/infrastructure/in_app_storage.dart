@@ -18,6 +18,7 @@ class LyricsDatabase {
   static const String columnLyricAuthor = 'lyric_author';
   static const String columnOriginalKey = 'original_key';
   static const String columnDateAdded = 'date_added';
+  static const String columnLyrics = 'lyrics';
 
   LyricsDatabase._init();
 
@@ -46,6 +47,7 @@ class LyricsDatabase {
         $columnComposer TEXT NOT NULL,
         $columnLyricAuthor TEXT NOT NULL,
         $columnOriginalKey TEXT NOT NULL,
+        $columnLyrics TEXT NOT NULL,
         $columnDateAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
       )
     ''');
@@ -66,6 +68,7 @@ class LyricsDatabase {
         columnComposer,
         columnLyricAuthor,
         columnOriginalKey,
+        columnLyrics,
         columnDateAdded
       ],
       where: '$columnSongId = ?',
@@ -116,6 +119,7 @@ class LyricsModel {
   final String composer;
   final String lyricAuthor;
   final String originalKey;
+  final String lyrics;
   final DateTime dateAdded;
 
   LyricsModel({
@@ -124,6 +128,7 @@ class LyricsModel {
     required this.composer,
     required this.lyricAuthor,
     required this.originalKey,
+    required this.lyrics,
     required this.dateAdded,
   });
 
@@ -133,6 +138,7 @@ class LyricsModel {
         LyricsDatabase.columnComposer: composer,
         LyricsDatabase.columnLyricAuthor: lyricAuthor,
         LyricsDatabase.columnOriginalKey: originalKey,
+        LyricsDatabase.columnLyrics: lyrics,
         LyricsDatabase.columnDateAdded: dateAdded.toIso8601String(),
       };
 
@@ -142,6 +148,7 @@ class LyricsModel {
         composer: json[LyricsDatabase.columnComposer] as String,
         lyricAuthor: json[LyricsDatabase.columnLyricAuthor] as String,
         originalKey: json[LyricsDatabase.columnOriginalKey] as String,
+        lyrics: json[LyricsDatabase.columnLyrics] as String,
         dateAdded:
             DateTime.parse(json[LyricsDatabase.columnDateAdded] as String),
       );
@@ -152,6 +159,7 @@ class LyricsModel {
     String? composer,
     String? lyricAuthor,
     String? originalKey,
+    String? lyrics,
     DateTime? dateAdded,
   }) =>
       LyricsModel(
@@ -160,6 +168,7 @@ class LyricsModel {
         composer: composer ?? this.composer,
         lyricAuthor: lyricAuthor ?? this.lyricAuthor,
         originalKey: originalKey ?? this.originalKey,
+        lyrics: lyrics ?? this.lyrics,
         dateAdded: dateAdded ?? this.dateAdded,
       );
 }
