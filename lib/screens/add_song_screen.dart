@@ -61,6 +61,12 @@ class _AddSongScreenState extends State<AddSongScreen> {
     );
   }
 
+  void _saveSong() {
+    if (_textController.text.isNotEmpty) {
+      Navigator.pop(context, _textController.text);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,6 +82,10 @@ class _AddSongScreenState extends State<AddSongScreen> {
               );
             }).toList(),
             onSelected: _insertChord,
+          ),
+          IconButton(
+            icon: const Icon(Icons.save),
+            onPressed: _saveSong,
           ),
           const SizedBox(width: 20),
         ],
