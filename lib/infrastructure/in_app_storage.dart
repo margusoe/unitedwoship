@@ -1,12 +1,11 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
-class LyricsDatabase {
-  static final LyricsDatabase instance = LyricsDatabase._init();
-  static Database? _database;
+class SongDatabase {
+  late Database _database;
 
   // Database name
-  static const String dbName = 'lyrics.db';
+  static const String _dbName = 'lyrics.db';
 
   // Table name
   static const String tableLyrics = 'lyrics';
@@ -20,24 +19,35 @@ class LyricsDatabase {
   static const String columnDateAdded = 'date_added';
   static const String columnLyrics = 'lyrics';
 
-  LyricsDatabase._init();
+  // SongDatabase._init();
 
-  Future<Database> get database async {
-    if (_database != null) return _database!;
-    _database = await _initDB(dbName);
-    return _database!;
-  }
+  Future<void> init() async {
+    var databasesPath = await getDatabasesPath();
+    var path = join(databasesPath, _dbName);
 
-  Future<Database> _initDB(String filePath) async {
-    final dbPath = await getDatabasesPath();
-    final path = join(dbPath, filePath);
-
-    return await openDatabase(
+    _database = await openDatabase(
       path,
       version: 1,
       onCreate: _createDB,
     );
   }
+
+  // Future<Database> get database async {
+  //   if (_database != null) return _database!;
+  //   _database = await _initDB(dbName);
+  //   return _database!;
+  // }
+
+  // Future<Database> _initDB(String filePath) async {
+  //   final dbPath = await getDatabasesPath();
+  //   final path = join(dbPath, filePath);
+
+  //   return await openDatabase(
+  //     path,
+  //     version: 1,
+  //     onCreate: _createDB,
+  //   );
+  // }
 
   Future<void> _createDB(Database db, int version) async {
     await db.execute('''
@@ -53,14 +63,12 @@ class LyricsDatabase {
     ''');
   }
 
-  Future<int> createLyrics(LyricsModel lyrics) async {
-    final db = await instance.database;
-    return await db.insert(tableLyrics, lyrics.toJson());
+  Future<int> createSong(SongModel lyrics) async {
+    return await _database.insert(tableLyrics, lyrics.toJson());
   }
 
-  Future<LyricsModel?> readLyrics(int songId) async {
-    final db = await instance.database;
-    final maps = await db.query(
+  Future<SongModel?> getSong(int songId) async {
+    final maps = await _database.query(
       tableLyrics,
       columns: [
         columnSongId,
@@ -76,21 +84,19 @@ class LyricsDatabase {
     );
 
     if (maps.isNotEmpty) {
-      return LyricsModel.fromJson(maps.first);
+      return SongModel.fromJson(maps.first);
     }
     return null;
   }
 
-  Future<List<LyricsModel>> readAllLyrics() async {
-    final db = await instance.database;
+  Future<List<SongModel>> getAllSongs() async {
     final result =
-        await db.query(tableLyrics, orderBy: '$columnDateAdded DESC');
-    return result.map((json) => LyricsModel.fromJson(json)).toList();
+        await _database.query(tableLyrics, orderBy: '$columnDateAdded DESC');
+    return result.map((json) => SongModel.fromJson(json)).toList();
   }
 
-  Future<int> updateLyrics(LyricsModel lyrics) async {
-    final db = await instance.database;
-    return db.update(
+  Future<int> updateSong(SongModel lyrics) async {
+    return _database.update(
       tableLyrics,
       lyrics.toJson(),
       where: '$columnSongId = ?',
@@ -98,9 +104,8 @@ class LyricsDatabase {
     );
   }
 
-  Future<int> deleteLyrics(int songId) async {
-    final db = await instance.database;
-    return await db.delete(
+  Future<int> deleteSong(int songId) async {
+    return await _database.delete(
       tableLyrics,
       where: '$columnSongId = ?',
       whereArgs: [songId],
@@ -108,12 +113,11 @@ class LyricsDatabase {
   }
 
   Future close() async {
-    final db = await instance.database;
-    db.close();
+    _database.close();
   }
 }
 
-class LyricsModel {
+class SongModel {
   final int? songId;
   final String songName;
   final String composer;
@@ -122,7 +126,7 @@ class LyricsModel {
   final String lyrics;
   final DateTime dateAdded;
 
-  LyricsModel({
+  SongModel({
     this.songId,
     required this.songName,
     required this.composer,
@@ -133,27 +137,26 @@ class LyricsModel {
   });
 
   Map<String, dynamic> toJson() => {
-        LyricsDatabase.columnSongId: songId,
-        LyricsDatabase.columnSongName: songName,
-        LyricsDatabase.columnComposer: composer,
-        LyricsDatabase.columnLyricAuthor: lyricAuthor,
-        LyricsDatabase.columnOriginalKey: originalKey,
-        LyricsDatabase.columnLyrics: lyrics,
-        LyricsDatabase.columnDateAdded: dateAdded.toIso8601String(),
+        SongDatabase.columnSongId: songId,
+        SongDatabase.columnSongName: songName,
+        SongDatabase.columnComposer: composer,
+        SongDatabase.columnLyricAuthor: lyricAuthor,
+        SongDatabase.columnOriginalKey: originalKey,
+        SongDatabase.columnLyrics: lyrics,
+        SongDatabase.columnDateAdded: dateAdded.toIso8601String(),
       };
 
-  static LyricsModel fromJson(Map<String, dynamic> json) => LyricsModel(
-        songId: json[LyricsDatabase.columnSongId] as int?,
-        songName: json[LyricsDatabase.columnSongName] as String,
-        composer: json[LyricsDatabase.columnComposer] as String,
-        lyricAuthor: json[LyricsDatabase.columnLyricAuthor] as String,
-        originalKey: json[LyricsDatabase.columnOriginalKey] as String,
-        lyrics: json[LyricsDatabase.columnLyrics] as String,
-        dateAdded:
-            DateTime.parse(json[LyricsDatabase.columnDateAdded] as String),
+  static SongModel fromJson(Map<String, dynamic> json) => SongModel(
+        songId: json[SongDatabase.columnSongId] as int?,
+        songName: json[SongDatabase.columnSongName] as String,
+        composer: json[SongDatabase.columnComposer] as String,
+        lyricAuthor: json[SongDatabase.columnLyricAuthor] as String,
+        originalKey: json[SongDatabase.columnOriginalKey] as String,
+        lyrics: json[SongDatabase.columnLyrics] as String,
+        dateAdded: DateTime.parse(json[SongDatabase.columnDateAdded] as String),
       );
 
-  LyricsModel copy({
+  SongModel copy({
     int? songId,
     String? songName,
     String? composer,
@@ -162,7 +165,7 @@ class LyricsModel {
     String? lyrics,
     DateTime? dateAdded,
   }) =>
-      LyricsModel(
+      SongModel(
         songId: songId ?? this.songId,
         songName: songName ?? this.songName,
         composer: composer ?? this.composer,

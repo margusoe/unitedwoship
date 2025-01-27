@@ -1,11 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:unitedwoship/home/home_manager.dart';
+import 'package:unitedwoship/infrastructure/in_app_storage.dart';
 import 'package:unitedwoship/screens/add_song/add_song_screen.dart';
 import 'package:unitedwoship/screens/song_screen.dart';
 
-class HomeScreen extends StatelessWidget {
-  final List<String> items = List.generate(20, (index) => 'Item ${index + 1}');
-
+class HomeScreen extends StatefulWidget {
   HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final _manager = HomeManager();
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _manager.init();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,25 +69,34 @@ class HomeScreen extends StatelessWidget {
           ],
         ),
       ),
-      body: ListView.builder(
-        itemCount: items.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(
-              items[index],
-            ),
-            leading: Icon(Icons.label, color: Colors.grey.shade700),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SongScreen(),
-                ),
+      body: ValueListenableBuilder<List<SongModel>>(
+          valueListenable: _manager.songListNotifier,
+          builder: (context, songList, child) {
+            if (songList.isEmpty) {
+              return Center(
+                child: Text('No songs found. Please add a song.'),
               );
-            },
-          );
-        },
-      ),
+            }
+            return ListView.builder(
+              itemCount: songList.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(
+                    songList[index].songName,
+                  ),
+                  leading: Icon(Icons.label, color: Colors.grey.shade700),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SongScreen(),
+                      ),
+                    );
+                  },
+                );
+              },
+            );
+          }),
     );
   }
 }

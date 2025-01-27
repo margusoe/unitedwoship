@@ -1,7 +1,8 @@
 import 'package:unitedwoship/infrastructure/in_app_storage.dart';
+import 'package:unitedwoship/infrastructure/service_locator.dart';
 
 class AddSongManager {
-  final LyricsDatabase _lyricsDatabase = LyricsDatabase.instance;
+  final SongDatabase _lyricsDatabase = getIt<SongDatabase>();
 
   Future<int> addSong({
     required String songName,
@@ -10,7 +11,7 @@ class AddSongManager {
     required String originalKey,
     required String lyrics,
   }) async {
-    final lyricsModel = LyricsModel(
+    final lyricsModel = SongModel(
       songName: songName,
       composer: composer,
       lyricAuthor: lyricAuthor,
@@ -19,6 +20,6 @@ class AddSongManager {
       dateAdded: DateTime.now(),
     );
 
-    return await _lyricsDatabase.createLyrics(lyricsModel);
+    return await _lyricsDatabase.createSong(lyricsModel);
   }
 }

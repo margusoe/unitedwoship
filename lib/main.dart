@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:unitedwoship/screens/home_screen.dart';
+import 'package:unitedwoship/home/home_screen.dart';
+import 'package:unitedwoship/infrastructure/in_app_storage.dart';
+import 'package:unitedwoship/infrastructure/service_locator.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  setupServiceLocator();
+  await getIt<SongDatabase>().init();
   runApp(MyApp());
 }
 
