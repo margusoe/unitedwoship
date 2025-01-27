@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:unitedwoship/screens/add_song_screen.dart';
 import 'package:unitedwoship/screens/song_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -36,9 +37,16 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             ListTile(
-              leading: Icon(Icons.home, color: Colors.grey.shade700),
-              title: Text('Home'),
-              onTap: () {},
+              leading: Icon(Icons.add, color: Colors.grey.shade700),
+              title: Text('Add Song'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddSongScreen(),
+                  ),
+                );
+              },
             ),
             ListTile(
               leading: Icon(Icons.settings, color: Colors.grey.shade700),
