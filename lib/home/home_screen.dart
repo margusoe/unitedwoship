@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:unitedwoship/home/home_manager.dart';
 import 'package:unitedwoship/infrastructure/in_app_storage.dart';
 import 'package:unitedwoship/screens/add_song/add_song_screen.dart';
-import 'package:unitedwoship/screens/song_screen.dart';
+import 'package:unitedwoship/screens/song/song_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({super.key});
@@ -45,8 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 decoration: BoxDecoration(
                   color: Color(0xFF4c4c4c),
                 ),
-                child: Text('United Worship',
-                    style: TextStyle(color: Colors.white)),
+                child: Text('United Worship', style: TextStyle(color: Colors.white)),
               ),
             ),
             ListTile(
@@ -69,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
-      body: ValueListenableBuilder<List<SongModel>>(
+      body: ValueListenableBuilder<List<(int, String)>>(
           valueListenable: _manager.songListNotifier,
           builder: (context, songList, child) {
             if (songList.isEmpty) {
@@ -80,16 +79,19 @@ class _HomeScreenState extends State<HomeScreen> {
             return ListView.builder(
               itemCount: songList.length,
               itemBuilder: (context, index) {
+                final (songId, title) = songList[index];
                 return ListTile(
                   title: Text(
-                    songList[index].songName,
+                    title,
                   ),
                   leading: Icon(Icons.label, color: Colors.grey.shade700),
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => SongScreen(),
+                        builder: (context) => SongScreen(
+                          songId: songId,
+                        ),
                       ),
                     );
                   },

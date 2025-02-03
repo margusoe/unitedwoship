@@ -12,7 +12,7 @@ class AddSongManager {
     required String lyrics,
   }) async {
     final lyricsModel = SongModel(
-      songName: songName,
+      title: songName,
       composer: composer,
       lyricAuthor: lyricAuthor,
       originalKey: originalKey,

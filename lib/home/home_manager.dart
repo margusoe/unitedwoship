@@ -4,7 +4,7 @@ import 'package:unitedwoship/infrastructure/service_locator.dart';
 
 class HomeManager {
   final SongDatabase _lyricsDatabase = getIt<SongDatabase>();
-  final songListNotifier = ValueNotifier<List<SongModel>>([]);
+  final songListNotifier = ValueNotifier<List<(int, String)>>([]);
   Future<void> init() async {
     final songs = await _lyricsDatabase.getAllSongs();
     songListNotifier.value = songs;

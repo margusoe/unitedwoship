@@ -19,8 +19,6 @@ class SongDatabase {
   static const String columnDateAdded = 'date_added';
   static const String columnLyrics = 'lyrics';
 
-  // SongDatabase._init();
-
   Future<void> init() async {
     var databasesPath = await getDatabasesPath();
     var path = join(databasesPath, _dbName);
@@ -31,23 +29,6 @@ class SongDatabase {
       onCreate: _createDB,
     );
   }
-
-  // Future<Database> get database async {
-  //   if (_database != null) return _database!;
-  //   _database = await _initDB(dbName);
-  //   return _database!;
-  // }
-
-  // Future<Database> _initDB(String filePath) async {
-  //   final dbPath = await getDatabasesPath();
-  //   final path = join(dbPath, filePath);
-
-  //   return await openDatabase(
-  //     path,
-  //     version: 1,
-  //     onCreate: _createDB,
-  //   );
-  // }
 
   Future<void> _createDB(Database db, int version) async {
     await db.execute('''
@@ -89,10 +70,9 @@ class SongDatabase {
     return null;
   }
 
-  Future<List<SongModel>> getAllSongs() async {
-    final result =
-        await _database.query(tableLyrics, orderBy: '$columnDateAdded DESC');
-    return result.map((json) => SongModel.fromJson(json)).toList();
+  Future<List<(int id, String title)>> getAllSongs() async {
+    final result = await _database.query(tableLyrics, orderBy: '$columnDateAdded DESC');
+    return result.map((map) => (map[columnSongId] as int, map[columnSongName] as String)).toList();
   }
 
   Future<int> updateSong(SongModel lyrics) async {
@@ -119,7 +99,7 @@ class SongDatabase {
 
 class SongModel {
   final int? songId;
-  final String songName;
+  final String title;
   final String composer;
   final String lyricAuthor;
   final String originalKey;
@@ -128,7 +108,7 @@ class SongModel {
 
   SongModel({
     this.songId,
-    required this.songName,
+    required this.title,
     required this.composer,
     required this.lyricAuthor,
     required this.originalKey,
@@ -138,7 +118,7 @@ class SongModel {
 
   Map<String, dynamic> toJson() => {
         SongDatabase.columnSongId: songId,
-        SongDatabase.columnSongName: songName,
+        SongDatabase.columnSongName: title,
         SongDatabase.columnComposer: composer,
         SongDatabase.columnLyricAuthor: lyricAuthor,
         SongDatabase.columnOriginalKey: originalKey,
@@ -148,7 +128,7 @@ class SongModel {
 
   static SongModel fromJson(Map<String, dynamic> json) => SongModel(
         songId: json[SongDatabase.columnSongId] as int?,
-        songName: json[SongDatabase.columnSongName] as String,
+        title: json[SongDatabase.columnSongName] as String,
         composer: json[SongDatabase.columnComposer] as String,
         lyricAuthor: json[SongDatabase.columnLyricAuthor] as String,
         originalKey: json[SongDatabase.columnOriginalKey] as String,
@@ -167,7 +147,7 @@ class SongModel {
   }) =>
       SongModel(
         songId: songId ?? this.songId,
-        songName: songName ?? this.songName,
+        title: songName ?? this.title,
         composer: composer ?? this.composer,
         lyricAuthor: lyricAuthor ?? this.lyricAuthor,
         originalKey: originalKey ?? this.originalKey,
