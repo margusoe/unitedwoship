@@ -11,6 +11,10 @@ class AddSongScreen extends StatefulWidget {
 class _AddSongScreenState extends State<AddSongScreen> {
   final _manager = AddSongManager();
   final TextEditingController _textController = TextEditingController();
+  final TextEditingController _songNameController = TextEditingController();
+  final TextEditingController _composerController = TextEditingController();
+  final TextEditingController _lyricAuthorController = TextEditingController();
+  final TextEditingController _originalKeyController = TextEditingController();
   final List<String> _chords = [
     'A',
     'Am',
@@ -45,6 +49,10 @@ class _AddSongScreenState extends State<AddSongScreen> {
   @override
   void dispose() {
     _textController.dispose();
+    _songNameController.dispose();
+    _composerController.dispose();
+    _lyricAuthorController.dispose();
+    _originalKeyController.dispose();
     super.dispose();
   }
 
@@ -52,10 +60,8 @@ class _AddSongScreenState extends State<AddSongScreen> {
     final bracketedChord = '[$chord]';
     final text = _textController.text;
     final selection = _textController.selection;
-    final newText =
-        text.replaceRange(selection.start, selection.end, bracketedChord);
-    final newSelection = TextSelection.collapsed(
-        offset: selection.start + bracketedChord.length);
+    final newText = text.replaceRange(selection.start, selection.end, bracketedChord);
+    final newSelection = TextSelection.collapsed(offset: selection.start + bracketedChord.length);
 
     _textController.value = TextEditingValue(
       text: newText,
@@ -64,12 +70,16 @@ class _AddSongScreenState extends State<AddSongScreen> {
   }
 
   void _saveSong() {
-    if (_textController.text.isNotEmpty) {
+    if (_textController.text.isNotEmpty &&
+        _songNameController.text.isNotEmpty &&
+        _composerController.text.isNotEmpty &&
+        _lyricAuthorController.text.isNotEmpty &&
+        _originalKeyController.text.isNotEmpty) {
       _manager.addSong(
-        songName: "songName",
-        composer: "composer",
-        lyricAuthor: "lyricAuthor",
-        originalKey: "originalKey",
+        songName: _songNameController.text,
+        composer: _composerController.text,
+        lyricAuthor: _lyricAuthorController.text,
+        originalKey: _originalKeyController.text,
         lyrics: _textController.text,
       );
       Navigator.pop(context, _textController.text);
@@ -101,15 +111,53 @@ class _AddSongScreenState extends State<AddSongScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: TextField(
-          controller: _textController,
-          maxLines: null,
-          expands: true,
-          textAlignVertical: TextAlignVertical.top,
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            hintText: 'Enter your text here...',
-          ),
+        child: Column(
+          children: [
+            TextField(
+              controller: _songNameController,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Song Name',
+              ),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _composerController,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Composer',
+              ),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _lyricAuthorController,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Lyric Author',
+              ),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _originalKeyController,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Original Key',
+              ),
+            ),
+            const SizedBox(height: 8),
+            Expanded(
+              child: TextField(
+                controller: _textController,
+                maxLines: null,
+                expands: true,
+                textAlignVertical: TextAlignVertical.top,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'Enter your lyrics here...',
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
