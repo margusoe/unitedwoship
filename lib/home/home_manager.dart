@@ -9,4 +9,9 @@ class HomeManager {
     final songs = await _lyricsDatabase.getAllSongs();
     songListNotifier.value = songs;
   }
+
+  Future<void> deleteSong(int songId) async {
+    await _lyricsDatabase.deleteSong(songId);
+    init();
+  }
 }

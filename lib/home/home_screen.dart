@@ -96,11 +96,78 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     );
                   },
+                  onLongPress: () {
+                    _showSongOptions(songId);
+                  },
                 );
               },
             );
           }),
     );
+  }
+
+  Future<void> _showSongOptions(int songId) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Song Options'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: Icon(Icons.edit),
+                title: Text('Edit'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddEditSongScreen(
+                        songId: songId,
+                      ),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.delete),
+                title: Text('Delete'),
+                onTap: () async {
+                  Navigator.pop(context);
+                  final shouldDelete = await _confirmDelete();
+                  if (shouldDelete) {
+                    _manager.deleteSong(songId);
+                  }
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<bool> _confirmDelete() {
+    return showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirm Delete'),
+          content: Text('Are you sure you want to delete this song?'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () => Navigator.of(context).pop(false),
+            ),
+            TextButton(
+              child: Text('Delete'),
+              onPressed: () => Navigator.of(context).pop(true),
+            ),
+          ],
+        );
+      },
+    ).then((value) => value ?? false);
   }
 }
 
