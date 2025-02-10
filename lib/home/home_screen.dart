@@ -85,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   title: Text(
                     title,
                   ),
-                  leading: Icon(Icons.label, color: Colors.grey.shade700),
+                  leading: Icon(Icons.lyrics, color: Colors.grey.shade700),
                   onTap: () {
                     Navigator.push(
                       context,

@@ -28,87 +28,89 @@ class _SongScreenState extends State<SongScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('How Great is Our God'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.arrow_upward),
-            onPressed: () {
-              setState(
-                () {
-                  _transposeValue++;
-                },
-              );
-            },
-          ),
-          Text(_transposeValue.toString()),
-          IconButton(
-            icon: const Icon(Icons.arrow_downward),
-            onPressed: () {
-              setState(() {
-                _transposeValue--;
-              });
-            },
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      AddEditSongScreen(songId: widget.songId),
-                ),
-              );
-            },
-            child: Text("Edit"),
-          )
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: ValueListenableBuilder<SongModel?>(
-          valueListenable: _manager.lyricsNotifier,
-          builder: (context, song, child) {
-            if (song == null) {
-              return const SizedBox();
-            }
-            return LyricsRenderer(
-              lyrics: song.lyrics,
-              textStyle: Theme.of(context).textTheme.bodyMedium!,
-              chordStyle: Theme.of(context)
-                  .textTheme
-                  .bodyMedium!
-                  .copyWith(color: Colors.blue),
-              transposeIncrement: _transposeValue,
-              onTapChord: (chord) {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return Dialog(
-                      child: Container(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              'Chord $chord',
-                              style: Theme.of(context).textTheme.titleLarge,
-                            ),
-                            const SizedBox(height: 16.0),
-                            FlutterLogo(),
-                            const SizedBox(height: 16.0),
-                          ],
-                        ),
-                      ),
+    return ValueListenableBuilder<SongModel?>(
+        valueListenable: _manager.lyricsNotifier,
+        builder: (context, song, child) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(song?.title ?? ''),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_upward),
+                  onPressed: () {
+                    setState(
+                      () {
+                        _transposeValue++;
+                      },
                     );
                   },
-                );
-              },
+                ),
+                Text(_transposeValue.toString()),
+                IconButton(
+                  icon: const Icon(Icons.arrow_downward),
+                  onPressed: () {
+                    setState(() {
+                      _transposeValue--;
+                    });
+                  },
+                ),
+                TextButton(
+                  onPressed: () async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            AddEditSongScreen(songId: widget.songId),
+                      ),
+                    );
+                    _manager.init(widget.songId);
+                  },
+                  child: Text("Edit"),
+                )
+              ],
+            ),
+            body: SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: _buildBody(song),
+            ),
+          );
+        });
+  }
+
+  Widget _buildBody(SongModel? song) {
+    if (song == null) {
+      return const SizedBox();
+    }
+    return LyricsRenderer(
+      lyrics: song.lyrics,
+      textStyle: Theme.of(context).textTheme.bodyMedium!,
+      chordStyle:
+          Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.blue),
+      transposeIncrement: _transposeValue,
+      onTapChord: (chord) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return Dialog(
+              child: Container(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Chord $chord',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 16.0),
+                    FlutterLogo(),
+                    const SizedBox(height: 16.0),
+                  ],
+                ),
+              ),
             );
           },
-        ),
-      ),
+        );
+      },
     );
   }
 }
