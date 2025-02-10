@@ -71,8 +71,11 @@ class SongDatabase {
   }
 
   Future<List<(int id, String title)>> getAllSongs() async {
-    final result = await _database.query(tableLyrics, orderBy: '$columnDateAdded DESC');
-    return result.map((map) => (map[columnSongId] as int, map[columnSongName] as String)).toList();
+    final result =
+        await _database.query(tableLyrics, orderBy: '$columnDateAdded DESC');
+    return result
+        .map((map) => (map[columnSongId] as int, map[columnSongName] as String))
+        .toList();
   }
 
   Future<int> updateSong(SongModel lyrics) async {

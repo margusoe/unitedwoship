@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:unitedwoship/screens/add_song/add_song_manager.dart';
+import 'package:unitedwoship/screens/add_edit_song/add_edit_song_manager.dart';
 
-class AddSongScreen extends StatefulWidget {
-  const AddSongScreen({super.key});
+class AddEditSongScreen extends StatefulWidget {
+  const AddEditSongScreen({
+    super.key,
+    this.songId,
+  });
 
+  final int? songId;
   @override
-  State<AddSongScreen> createState() => _AddSongScreenState();
+  State<AddEditSongScreen> createState() => _AddEditSongScreenState();
 }
 
-class _AddSongScreenState extends State<AddSongScreen> {
-  final _manager = AddSongManager();
-  final TextEditingController _textController = TextEditingController();
+class _AddEditSongScreenState extends State<AddEditSongScreen> {
+  final _manager = AddEditSongManager();
+  final TextEditingController _lyricsController = TextEditingController();
   final TextEditingController _songNameController = TextEditingController();
   final TextEditingController _composerController = TextEditingController();
   final TextEditingController _lyricAuthorController = TextEditingController();
@@ -47,8 +51,24 @@ class _AddSongScreenState extends State<AddSongScreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _populateTextFields();
+  }
+
+  Future<void> _populateTextFields() async {
+    final songModel = await _manager.getSongModel(widget.songId);
+    if (songModel == null) return;
+    _lyricsController.text = songModel.lyrics;
+    _songNameController.text = songModel.title;
+    _composerController.text = songModel.composer;
+    _lyricAuthorController.text = songModel.lyricAuthor;
+    _originalKeyController.text = songModel.originalKey;
+  }
+
+  @override
   void dispose() {
-    _textController.dispose();
+    _lyricsController.dispose();
     _songNameController.dispose();
     _composerController.dispose();
     _lyricAuthorController.dispose();
@@ -58,31 +78,34 @@ class _AddSongScreenState extends State<AddSongScreen> {
 
   void _insertChord(String chord) {
     final bracketedChord = '[$chord]';
-    final text = _textController.text;
-    final selection = _textController.selection;
-    final newText = text.replaceRange(selection.start, selection.end, bracketedChord);
-    final newSelection = TextSelection.collapsed(offset: selection.start + bracketedChord.length);
+    final text = _lyricsController.text;
+    final selection = _lyricsController.selection;
+    final newText =
+        text.replaceRange(selection.start, selection.end, bracketedChord);
+    final newSelection = TextSelection.collapsed(
+        offset: selection.start + bracketedChord.length);
 
-    _textController.value = TextEditingValue(
+    _lyricsController.value = TextEditingValue(
       text: newText,
       selection: newSelection,
     );
   }
 
   void _saveSong() {
-    if (_textController.text.isNotEmpty &&
+    if (_lyricsController.text.isNotEmpty &&
         _songNameController.text.isNotEmpty &&
         _composerController.text.isNotEmpty &&
         _lyricAuthorController.text.isNotEmpty &&
         _originalKeyController.text.isNotEmpty) {
-      _manager.addSong(
+      _manager.saveSong(
+        songId: widget.songId,
         songName: _songNameController.text,
         composer: _composerController.text,
         lyricAuthor: _lyricAuthorController.text,
         originalKey: _originalKeyController.text,
-        lyrics: _textController.text,
+        lyrics: _lyricsController.text,
       );
-      Navigator.pop(context, _textController.text);
+      Navigator.pop(context, _lyricsController.text);
     }
   }
 
@@ -90,7 +113,7 @@ class _AddSongScreenState extends State<AddSongScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Song'),
+        title: widget.songId == null ? Text('Add Song') : Text('Edit Song'),
         actions: [
           PopupMenuButton<String>(
             icon: const Text("Choose chords..."),
@@ -147,7 +170,7 @@ class _AddSongScreenState extends State<AddSongScreen> {
             const SizedBox(height: 8),
             Expanded(
               child: TextField(
-                controller: _textController,
+                controller: _lyricsController,
                 maxLines: null,
                 expands: true,
                 textAlignVertical: TextAlignVertical.top,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:unitedwoship/home/home_manager.dart';
-import 'package:unitedwoship/infrastructure/in_app_storage.dart';
-import 'package:unitedwoship/screens/add_song/add_song_screen.dart';
+import 'package:unitedwoship/infrastructure/service_locator.dart';
+import 'package:unitedwoship/screens/add_edit_song/add_edit_song_screen.dart';
 import 'package:unitedwoship/screens/song/song_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -12,7 +12,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final _manager = HomeManager();
+  final _manager = getIt<HomeManager>();
   @override
   void initState() {
     // TODO: implement initState
@@ -45,7 +45,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 decoration: BoxDecoration(
                   color: Color(0xFF4c4c4c),
                 ),
-                child: Text('United Worship', style: TextStyle(color: Colors.white)),
+                child: Text('United Worship',
+                    style: TextStyle(color: Colors.white)),
               ),
             ),
             ListTile(
@@ -55,7 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => AddSongScreen(),
+                    builder: (context) => AddEditSongScreen(),
                   ),
                 );
               },

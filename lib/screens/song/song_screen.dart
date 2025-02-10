@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chord/flutter_chord.dart';
 import 'package:unitedwoship/infrastructure/in_app_storage.dart';
+import 'package:unitedwoship/screens/add_edit_song/add_edit_song_screen.dart';
 import 'package:unitedwoship/screens/song/song_manager.dart';
 
 class SongScreen extends StatefulWidget {
@@ -28,25 +29,42 @@ class _SongScreenState extends State<SongScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('How Great is Our God'), actions: [
-        IconButton(
-          icon: const Icon(Icons.arrow_upward),
-          onPressed: () {
-            setState(() {
-              _transposeValue++;
-            });
-          },
-        ),
-        Text(_transposeValue.toString()),
-        IconButton(
-          icon: const Icon(Icons.arrow_downward),
-          onPressed: () {
-            setState(() {
-              _transposeValue--;
-            });
-          },
-        ),
-      ]),
+      appBar: AppBar(
+        title: const Text('How Great is Our God'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.arrow_upward),
+            onPressed: () {
+              setState(
+                () {
+                  _transposeValue++;
+                },
+              );
+            },
+          ),
+          Text(_transposeValue.toString()),
+          IconButton(
+            icon: const Icon(Icons.arrow_downward),
+            onPressed: () {
+              setState(() {
+                _transposeValue--;
+              });
+            },
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      AddEditSongScreen(songId: widget.songId),
+                ),
+              );
+            },
+            child: Text("Edit"),
+          )
+        ],
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: ValueListenableBuilder<SongModel?>(
@@ -58,7 +76,10 @@ class _SongScreenState extends State<SongScreen> {
             return LyricsRenderer(
               lyrics: song.lyrics,
               textStyle: Theme.of(context).textTheme.bodyMedium!,
-              chordStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.blue),
+              chordStyle: Theme.of(context)
+                  .textTheme
+                  .bodyMedium!
+                  .copyWith(color: Colors.blue),
               transposeIncrement: _transposeValue,
               onTapChord: (chord) {
                 showDialog(
