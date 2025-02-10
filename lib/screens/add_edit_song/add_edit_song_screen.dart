@@ -18,7 +18,6 @@ class _AddEditSongScreenState extends State<AddEditSongScreen> {
   final TextEditingController _songNameController = TextEditingController();
   final TextEditingController _composerController = TextEditingController();
   final TextEditingController _lyricAuthorController = TextEditingController();
-  final TextEditingController _originalKeyController = TextEditingController();
   final List<String> _chords = [
     'A',
     'Am',
@@ -63,7 +62,6 @@ class _AddEditSongScreenState extends State<AddEditSongScreen> {
     _songNameController.text = songModel.title;
     _composerController.text = songModel.composer;
     _lyricAuthorController.text = songModel.lyricAuthor;
-    _originalKeyController.text = songModel.originalKey;
   }
 
   @override
@@ -72,7 +70,6 @@ class _AddEditSongScreenState extends State<AddEditSongScreen> {
     _songNameController.dispose();
     _composerController.dispose();
     _lyricAuthorController.dispose();
-    _originalKeyController.dispose();
     super.dispose();
   }
 
@@ -95,14 +92,12 @@ class _AddEditSongScreenState extends State<AddEditSongScreen> {
     if (_lyricsController.text.isNotEmpty &&
         _songNameController.text.isNotEmpty &&
         _composerController.text.isNotEmpty &&
-        _lyricAuthorController.text.isNotEmpty &&
-        _originalKeyController.text.isNotEmpty) {
+        _lyricAuthorController.text.isNotEmpty) {
       _manager.saveSong(
         songId: widget.songId,
         songName: _songNameController.text,
         composer: _composerController.text,
         lyricAuthor: _lyricAuthorController.text,
-        originalKey: _originalKeyController.text,
         lyrics: _lyricsController.text,
       );
       Navigator.pop(context, _lyricsController.text);
@@ -157,14 +152,6 @@ class _AddEditSongScreenState extends State<AddEditSongScreen> {
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Lyric Author',
-              ),
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: _originalKeyController,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Original Key',
               ),
             ),
             const SizedBox(height: 8),

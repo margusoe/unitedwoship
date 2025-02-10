@@ -10,7 +10,6 @@ class AddEditSongManager {
     required String songName,
     required String composer,
     required String lyricAuthor,
-    required String originalKey,
     required String lyrics,
   }) async {
     final lyricsModel = SongModel(
@@ -18,7 +17,6 @@ class AddEditSongManager {
       title: songName,
       composer: composer,
       lyricAuthor: lyricAuthor,
-      originalKey: originalKey,
       lyrics: lyrics,
       dateAdded: DateTime.now(),
     );

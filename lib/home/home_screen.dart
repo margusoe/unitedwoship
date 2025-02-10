@@ -24,12 +24,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Flutter App'),
+        title: Text('United Worship'),
         actions: [
           IconButton(
             icon: Icon(Icons.search),
             onPressed: () {
-              // Add your search action here
               showSearch(context: context, delegate: CustomSearchDelegate());
             },
           ),

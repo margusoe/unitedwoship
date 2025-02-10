@@ -15,14 +15,13 @@ class SongDatabase {
   static const String columnSongName = 'song_name';
   static const String columnComposer = 'composer';
   static const String columnLyricAuthor = 'lyric_author';
-  static const String columnOriginalKey = 'original_key';
   static const String columnDateAdded = 'date_added';
   static const String columnLyrics = 'lyrics';
 
   Future<void> init() async {
     var databasesPath = await getDatabasesPath();
     var path = join(databasesPath, _dbName);
-
+    print(path);
     _database = await openDatabase(
       path,
       version: 1,
@@ -37,7 +36,6 @@ class SongDatabase {
         $columnSongName TEXT NOT NULL,
         $columnComposer TEXT NOT NULL,
         $columnLyricAuthor TEXT NOT NULL,
-        $columnOriginalKey TEXT NOT NULL,
         $columnLyrics TEXT NOT NULL,
         $columnDateAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
       )
@@ -56,7 +54,6 @@ class SongDatabase {
         columnSongName,
         columnComposer,
         columnLyricAuthor,
-        columnOriginalKey,
         columnLyrics,
         columnDateAdded
       ],
@@ -105,7 +102,6 @@ class SongModel {
   final String title;
   final String composer;
   final String lyricAuthor;
-  final String originalKey;
   final String lyrics;
   final DateTime dateAdded;
 
@@ -114,7 +110,6 @@ class SongModel {
     required this.title,
     required this.composer,
     required this.lyricAuthor,
-    required this.originalKey,
     required this.lyrics,
     required this.dateAdded,
   });
@@ -124,7 +119,6 @@ class SongModel {
         SongDatabase.columnSongName: title,
         SongDatabase.columnComposer: composer,
         SongDatabase.columnLyricAuthor: lyricAuthor,
-        SongDatabase.columnOriginalKey: originalKey,
         SongDatabase.columnLyrics: lyrics,
         SongDatabase.columnDateAdded: dateAdded.toIso8601String(),
       };
@@ -134,26 +128,23 @@ class SongModel {
         title: json[SongDatabase.columnSongName] as String,
         composer: json[SongDatabase.columnComposer] as String,
         lyricAuthor: json[SongDatabase.columnLyricAuthor] as String,
-        originalKey: json[SongDatabase.columnOriginalKey] as String,
         lyrics: json[SongDatabase.columnLyrics] as String,
         dateAdded: DateTime.parse(json[SongDatabase.columnDateAdded] as String),
       );
 
   SongModel copy({
     int? songId,
-    String? songName,
+    String? title,
     String? composer,
     String? lyricAuthor,
-    String? originalKey,
     String? lyrics,
     DateTime? dateAdded,
   }) =>
       SongModel(
         songId: songId ?? this.songId,
-        title: songName ?? this.title,
+        title: title ?? this.title,
         composer: composer ?? this.composer,
         lyricAuthor: lyricAuthor ?? this.lyricAuthor,
-        originalKey: originalKey ?? this.originalKey,
         lyrics: lyrics ?? this.lyrics,
         dateAdded: dateAdded ?? this.dateAdded,
       );
