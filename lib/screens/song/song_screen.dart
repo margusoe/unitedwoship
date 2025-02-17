@@ -81,35 +81,42 @@ class _SongScreenState extends State<SongScreen> {
     if (song == null) {
       return const SizedBox();
     }
-    return LyricsRenderer(
-      lyrics: song.lyrics,
-      textStyle: TextStyle(fontSize: _manager.fontSize),
-      chordStyle: TextStyle(fontSize: _manager.fontSize, color: Colors.blue),
-      transposeIncrement: _transposeValue,
-      onTapChord: (chord) {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return Dialog(
-              child: Container(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Chord $chord',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 16.0),
-                    FlutterLogo(),
-                    const SizedBox(height: 16.0),
-                  ],
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: screenWidth < 600 ? 0 : 58),
+      child: LyricsRenderer(
+        lyrics: song.lyrics,
+        textStyle: Theme.of(context)
+            .textTheme
+            .bodyMedium!
+            .copyWith(fontSize: _manager.fontSize),
+        chordStyle: TextStyle(fontSize: _manager.fontSize, color: Colors.blue),
+        transposeIncrement: _transposeValue,
+        onTapChord: (chord) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return Dialog(
+                child: Container(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Chord $chord',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      const SizedBox(height: 16.0),
+                      FlutterLogo(),
+                      const SizedBox(height: 16.0),
+                    ],
+                  ),
                 ),
-              ),
-            );
-          },
-        );
-      },
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

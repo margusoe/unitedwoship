@@ -14,7 +14,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   double _fontSize = 17;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _fontSize = getIt<UserSettings>().getFontSize();
   }
