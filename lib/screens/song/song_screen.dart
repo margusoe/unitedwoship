@@ -54,7 +54,7 @@ class _SongScreenState extends State<SongScreen> {
                     });
                   },
                 ),
-                TextButton(
+                IconButton(
                   onPressed: () async {
                     await Navigator.push(
                       context,
@@ -65,7 +65,7 @@ class _SongScreenState extends State<SongScreen> {
                     );
                     _manager.init(widget.songId);
                   },
-                  child: Text("Edit"),
+                  icon: Icon(Icons.edit_note),
                 )
               ],
             ),
@@ -82,41 +82,20 @@ class _SongScreenState extends State<SongScreen> {
       return const SizedBox();
     }
     final screenWidth = MediaQuery.sizeOf(context).width;
+    print(Theme.of(context).colorScheme.secondary);
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: screenWidth < 600 ? 0 : 58),
       child: LyricsRenderer(
-        lyrics: song.lyrics,
-        textStyle: Theme.of(context)
-            .textTheme
-            .bodyMedium!
-            .copyWith(fontSize: _manager.fontSize),
-        chordStyle: TextStyle(fontSize: _manager.fontSize, color: Colors.blue),
-        transposeIncrement: _transposeValue,
-        onTapChord: (chord) {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return Dialog(
-                child: Container(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'Chord $chord',
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      const SizedBox(height: 16.0),
-                      FlutterLogo(),
-                      const SizedBox(height: 16.0),
-                    ],
-                  ),
-                ),
-              );
-            },
-          );
-        },
-      ),
+          lyrics: song.lyrics,
+          textStyle: Theme.of(context)
+              .textTheme
+              .bodyMedium!
+              .copyWith(fontSize: _manager.fontSize),
+          chordStyle: TextStyle(
+              fontSize: _manager.fontSize,
+              color: Theme.of(context).colorScheme.secondary),
+          transposeIncrement: _transposeValue,
+          onTapChord: (chord) {}),
     );
   }
 }

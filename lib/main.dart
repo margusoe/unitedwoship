@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:unitedwoship/app_state_manager.dart';
-import 'package:unitedwoship/home/home_screen.dart';
+import 'package:unitedwoship/screens/home/home_screen.dart';
 import 'package:unitedwoship/infrastructure/in_app_storage.dart';
 import 'package:unitedwoship/infrastructure/service_locator.dart';
 import 'package:unitedwoship/infrastructure/user_settings.dart';
@@ -27,10 +27,16 @@ class _MyAppState extends State<MyApp> {
     return ValueListenableBuilder<bool>(
         valueListenable: manager.darkModeNotifier,
         builder: (context, isDarkMode, child) {
-          print(isDarkMode);
           return MaterialApp(
             debugShowCheckedModeBanner: false,
-            theme: isDarkMode ? ThemeData.dark() : ThemeData.light(),
+            theme: isDarkMode
+                // ? ThemeData(colorScheme: MaterialTheme.darkScheme())
+                // : ThemeData(colorScheme: MaterialTheme.lightScheme()),
+                ? ThemeData(
+                    colorSchemeSeed: Colors.blue, brightness: Brightness.dark)
+                : ThemeData(
+                    colorSchemeSeed: Colors.grey[800],
+                    brightness: Brightness.light),
             home: HomeScreen(),
           );
         });

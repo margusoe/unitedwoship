@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:unitedwoship/home/home_manager.dart';
+import 'package:unitedwoship/screens/home/home_manager.dart';
 import 'package:unitedwoship/infrastructure/service_locator.dart';
 import 'package:unitedwoship/screens/add_edit_song/add_edit_song_screen.dart';
 import 'package:unitedwoship/screens/settings/settings_screen.dart';

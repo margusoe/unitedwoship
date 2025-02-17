@@ -1,4 +1,4 @@
-import 'package:unitedwoship/home/home_manager.dart';
+import 'package:unitedwoship/screens/home/home_manager.dart';
 import 'package:unitedwoship/infrastructure/in_app_storage.dart';
 import 'package:unitedwoship/infrastructure/service_locator.dart';
 
