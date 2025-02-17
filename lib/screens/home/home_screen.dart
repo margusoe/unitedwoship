@@ -45,8 +45,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 decoration: BoxDecoration(
                   color: Color(0xFF4c4c4c),
                 ),
-                child: Text('United Worship',
-                    style: TextStyle(color: Colors.white)),
+                child: Center(
+                  child: Text('United Worship',
+                      style: TextStyle(color: Colors.white)),
+                ),
               ),
             ),
             ListTile(
