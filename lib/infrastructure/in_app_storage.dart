@@ -21,7 +21,6 @@ class SongDatabase {
   Future<void> init() async {
     var databasesPath = await getDatabasesPath();
     var path = join(databasesPath, _dbName);
-    print(path);
     _database = await openDatabase(
       path,
       version: 1,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:unitedwoship/home/home_manager.dart';
 import 'package:unitedwoship/infrastructure/service_locator.dart';
 import 'package:unitedwoship/screens/add_edit_song/add_edit_song_screen.dart';
+import 'package:unitedwoship/screens/settings/settings_screen.dart';
 import 'package:unitedwoship/screens/song/song_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -25,14 +26,14 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('United Worship'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {
-              showSearch(context: context, delegate: CustomSearchDelegate());
-            },
-          ),
-        ],
+        // actions: [
+        //   IconButton(
+        //     icon: Icon(Icons.search),
+        //     onPressed: () {
+        //       showSearch(context: context, delegate: CustomSearchDelegate());
+        //     },
+        //   ),
+        // ],
       ),
       drawer: Drawer(
         child: ListView(
@@ -63,7 +64,14 @@ class _HomeScreenState extends State<HomeScreen> {
             ListTile(
               leading: Icon(Icons.settings, color: Colors.grey.shade700),
               title: Text('Settings'),
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SettingsScreen(),
+                  ),
+                );
+              },
             ),
           ],
         ),

@@ -83,9 +83,8 @@ class _SongScreenState extends State<SongScreen> {
     }
     return LyricsRenderer(
       lyrics: song.lyrics,
-      textStyle: Theme.of(context).textTheme.bodyMedium!,
-      chordStyle:
-          Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.blue),
+      textStyle: TextStyle(fontSize: _manager.fontSize),
+      chordStyle: TextStyle(fontSize: _manager.fontSize, color: Colors.blue),
       transposeIncrement: _transposeValue,
       onTapChord: (chord) {
         showDialog(
