@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:magtaalhundetgel/screens/about/about_screen.dart';
 import 'package:magtaalhundetgel/screens/home/home_manager.dart';
 import 'package:magtaalhundetgel/infrastructure/service_locator.dart';
 import 'package:magtaalhundetgel/screens/add_edit_song/add_edit_song_screen.dart';
@@ -56,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             fit: BoxFit.contain),
                       )),
                       SizedBox(height: 8),
-                      Text('United Worship',
+                      Text('Магтаал Хүндэтгэл',
                           style: TextStyle(color: Colors.white)),
                     ],
                   ),
@@ -83,6 +84,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => SettingsScreen(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.info, color: Colors.grey.shade700),
+              title: Text('About'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AboutScreen(),
                   ),
                 );
               },
