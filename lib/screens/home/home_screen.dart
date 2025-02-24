@@ -25,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('United Worship'),
+        title: Text('Магтаал Хүндэтгэл'),
         // actions: [
         //   IconButton(
         //     icon: Icon(Icons.search),
@@ -46,8 +46,20 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: Color(0xFF4c4c4c),
                 ),
                 child: Center(
-                  child: Text('United Worship',
-                      style: TextStyle(color: Colors.white)),
+                  child: Column(
+                    children: [
+                      Expanded(
+                          child: ColorFiltered(
+                        colorFilter:
+                            ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                        child: Image.asset('assets/logo512.png',
+                            fit: BoxFit.contain),
+                      )),
+                      SizedBox(height: 8),
+                      Text('United Worship',
+                          style: TextStyle(color: Colors.white)),
+                    ],
+                  ),
                 ),
               ),
             ),
