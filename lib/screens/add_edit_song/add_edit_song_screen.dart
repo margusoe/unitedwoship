@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:unitedwoship/screens/add_edit_song/add_edit_song_manager.dart';
+import 'package:magtaalhundetgel/screens/add_edit_song/add_edit_song_manager.dart';
 
 class AddEditSongScreen extends StatefulWidget {
   const AddEditSongScreen({

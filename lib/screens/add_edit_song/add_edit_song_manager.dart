@@ -1,6 +1,6 @@
-import 'package:unitedwoship/screens/home/home_manager.dart';
-import 'package:unitedwoship/infrastructure/in_app_storage.dart';
-import 'package:unitedwoship/infrastructure/service_locator.dart';
+import 'package:magtaalhundetgel/screens/home/home_manager.dart';
+import 'package:magtaalhundetgel/infrastructure/in_app_storage.dart';
+import 'package:magtaalhundetgel/infrastructure/service_locator.dart';
 
 class AddEditSongManager {
   final SongDatabase _lyricsDatabase = getIt<SongDatabase>();

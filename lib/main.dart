@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:unitedwoship/app_state_manager.dart';
-import 'package:unitedwoship/screens/home/home_screen.dart';
-import 'package:unitedwoship/infrastructure/in_app_storage.dart';
-import 'package:unitedwoship/infrastructure/service_locator.dart';
-import 'package:unitedwoship/infrastructure/user_settings.dart';
+import 'package:magtaalhundetgel/app_state_manager.dart';
+import 'package:magtaalhundetgel/screens/home/home_screen.dart';
+import 'package:magtaalhundetgel/infrastructure/in_app_storage.dart';
+import 'package:magtaalhundetgel/infrastructure/service_locator.dart';
+import 'package:magtaalhundetgel/infrastructure/user_settings.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

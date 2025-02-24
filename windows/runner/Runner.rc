@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "dev.ethnos" "\0"
-            VALUE "FileDescription", "unitedwoship" "\0"
+            VALUE "FileDescription", "magtaalhundetgel" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "unitedwoship" "\0"
+            VALUE "InternalName", "magtaalhundetgel" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2025 dev.ethnos. All rights reserved." "\0"
-            VALUE "OriginalFilename", "unitedwoship.exe" "\0"
-            VALUE "ProductName", "unitedwoship" "\0"
+            VALUE "OriginalFilename", "magtaalhundetgel.exe" "\0"
+            VALUE "ProductName", "magtaalhundetgel" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

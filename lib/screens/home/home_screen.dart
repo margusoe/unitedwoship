@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:unitedwoship/screens/home/home_manager.dart';
-import 'package:unitedwoship/infrastructure/service_locator.dart';
-import 'package:unitedwoship/screens/add_edit_song/add_edit_song_screen.dart';
-import 'package:unitedwoship/screens/settings/settings_screen.dart';
-import 'package:unitedwoship/screens/song/song_screen.dart';
+import 'package:magtaalhundetgel/screens/home/home_manager.dart';
+import 'package:magtaalhundetgel/infrastructure/service_locator.dart';
+import 'package:magtaalhundetgel/screens/add_edit_song/add_edit_song_screen.dart';
+import 'package:magtaalhundetgel/screens/settings/settings_screen.dart';
+import 'package:magtaalhundetgel/screens/song/song_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({super.key});
