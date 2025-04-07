@@ -27,80 +27,81 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Магтаал Хүндэтгэл'),
-        // actions: [
-        //   IconButton(
-        //     icon: Icon(Icons.search),
-        //     onPressed: () {
-        //       showSearch(context: context, delegate: CustomSearchDelegate());
-        //     },
-        //   ),
-        // ],
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            SizedBox(
-              height: 130,
-              child: DrawerHeader(
+      drawer: SizedBox(
+        width: 300,
+        child: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              DrawerHeader(
+                // padding: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0.0),
                 decoration: BoxDecoration(
                   color: Color(0xFF4c4c4c),
                 ),
-                child: Center(
-                  child: Column(
-                    children: [
-                      Expanded(
-                          child: ColorFiltered(
-                        colorFilter:
-                            ColorFilter.mode(Colors.white, BlendMode.srcIn),
-                        child: Image.asset('assets/logo512.png',
-                            fit: BoxFit.contain),
-                      )),
-                      SizedBox(height: 8),
-                      Text('Магтаал Хүндэтгэл',
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                            top: 20.0, left: 20.0, right: 20.0, bottom: 10.0),
+                        child: ColorFiltered(
+                          colorFilter:
+                              ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                          child: Image.asset('assets/logo512.png',
+                              fit: BoxFit.contain),
+                        ),
+                      ),
+                    ),
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text('Магтаал Хүндэтгэл',
                           style: TextStyle(color: Colors.white)),
-                    ],
-                  ),
+                    ),
+                    SizedBox(
+                      height: 20.0,
+                    )
+                  ],
                 ),
               ),
-            ),
-            ListTile(
-              leading: Icon(Icons.add, color: Colors.grey.shade700),
-              title: Text('Add Song'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AddEditSongScreen(),
-                  ),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.settings, color: Colors.grey.shade700),
-              title: Text('Settings'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => SettingsScreen(),
-                  ),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.info, color: Colors.grey.shade700),
-              title: Text('About'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AboutScreen(),
-                  ),
-                );
-              },
-            ),
-          ],
+              ListTile(
+                leading: Icon(Icons.add, color: Colors.grey.shade700),
+                title: Text('Дуу нэмэх'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddEditSongScreen(),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.settings, color: Colors.grey.shade700),
+                title: Text('Тохиргоо'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SettingsScreen(),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.info, color: Colors.grey.shade700),
+                title: Text('Бидний тухай'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AboutScreen(),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
       body: ValueListenableBuilder<List<(int, String)>>(
@@ -108,7 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
           builder: (context, songList, child) {
             if (songList.isEmpty) {
               return Center(
-                child: Text('No songs found. Please add a song.'),
+                child: Text('Дуу олдсонгүй. Та дуу нэмнэ үү.'),
               );
             }
             return ListView.builder(
@@ -145,13 +146,12 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Song Options'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
                 leading: Icon(Icons.edit),
-                title: Text('Edit'),
+                title: Text('Дуу Засах'),
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.push(
@@ -166,7 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               ListTile(
                 leading: Icon(Icons.delete),
-                title: Text('Delete'),
+                title: Text('Дуу Устгах'),
                 onTap: () async {
                   Navigator.pop(context);
                   final shouldDelete = await _confirmDelete();
@@ -187,71 +187,20 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Confirm Delete'),
-          content: Text('Are you sure you want to delete this song?'),
+          title: Text('Зөвшөөрөх'),
+          content: Text('Энэ дууг устгахыг зөвшөөрч байна уу?'),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'),
+              child: Text('Үгүй'),
               onPressed: () => Navigator.of(context).pop(false),
             ),
             TextButton(
-              child: Text('Delete'),
+              child: Text('Тийм'),
               onPressed: () => Navigator.of(context).pop(true),
             ),
           ],
         );
       },
     ).then((value) => value ?? false);
-  }
-}
-
-class CustomSearchDelegate extends SearchDelegate {
-  @override
-  List<Widget>? buildActions(BuildContext context) {
-    return [
-      IconButton(
-        icon: Icon(Icons.clear),
-        onPressed: () {
-          query = '';
-        },
-      ),
-    ];
-  }
-
-  @override
-  Widget? buildLeading(BuildContext context) {
-    return IconButton(
-      icon: Icon(Icons.arrow_back),
-      onPressed: () {
-        close(context, null);
-      },
-    );
-  }
-
-  @override
-  Widget buildResults(BuildContext context) {
-    return Center(
-      child: Text(
-        'Search Results for "$query"',
-      ),
-    );
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    return ListView.builder(
-      itemCount: query.isEmpty ? 0 : 5,
-      itemBuilder: (context, index) {
-        return ListTile(
-          title: Text(
-            'Suggestion ${index + 1} for "$query"',
-          ),
-          onTap: () {
-            query = 'Suggestion ${index + 1}';
-            showResults(context);
-          },
-        );
-      },
-    );
   }
 }

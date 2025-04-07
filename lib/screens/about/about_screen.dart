@@ -27,7 +27,7 @@ class _AboutScreenState extends State<AboutScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('About'),
+        title: const Text('Бидний Тухай'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -36,13 +36,14 @@ class _AboutScreenState extends State<AboutScreen> {
           children: [
             const SizedBox(height: 16),
             Text(
-              'Contact',
+              'Холбоо барих',
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SelectableText.rich(
               TextSpan(children: [
                 TextSpan(
-                  text: 'For any inquiries or feedback, please contact us at ',
+                  text:
+                      'Асуух асуулт эсвэл санал хүслээрээ бидэнтэй холбоо барихыг хүсвэл, энэ имэйл хаягаар холбоо барина уу: ',
                 ),
                 TextSpan(
                   text: 'otgonchuluubayarsaikhan@gmail.com',
@@ -52,19 +53,19 @@ class _AboutScreenState extends State<AboutScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              'License',
+              'Лицензи',
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 8),
             const Text(
-              'This work is released under the Creative Commons CC0 1.0 Universal (CC0 1.0) Public Domain Dedication.',
+              'Creative Commons CC0 1.0 Universal (CC0 1.0)-ын нээлттэй эх сурвалжын өмч болно.',
             ),
             const SizedBox(height: 8),
             ValueListenableBuilder<String>(
                 valueListenable: versionNotifier,
                 builder: (context, version, child) {
                   return Text(
-                    'Version: $version',
+                    'Хувилбар: $version',
                     style: Theme.of(context).textTheme.titleLarge,
                   );
                 }),

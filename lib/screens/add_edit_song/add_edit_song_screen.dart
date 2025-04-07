@@ -108,10 +108,10 @@ class _AddEditSongScreenState extends State<AddEditSongScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: widget.songId == null ? Text('Add Song') : Text('Edit Song'),
+        title: widget.songId == null ? Text('Дуу нэмэх') : Text('Дуу засах'),
         actions: [
           PopupMenuButton<String>(
-            icon: const Text("Choose chords..."),
+            icon: const Text("Аккорд сонгох..."),
             itemBuilder: (context) => _chords.map((String chord) {
               return PopupMenuItem<String>(
                 value: chord,
@@ -135,7 +135,7 @@ class _AddEditSongScreenState extends State<AddEditSongScreen> {
               controller: _songNameController,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: 'Song Name',
+                labelText: 'Дууны нэр',
               ),
             ),
             const SizedBox(height: 8),
@@ -143,7 +143,7 @@ class _AddEditSongScreenState extends State<AddEditSongScreen> {
               controller: _composerController,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: 'Composer',
+                labelText: 'Зохиогч',
               ),
             ),
             const SizedBox(height: 8),
@@ -151,7 +151,7 @@ class _AddEditSongScreenState extends State<AddEditSongScreen> {
               controller: _lyricAuthorController,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: 'Lyric Author',
+                labelText: 'Үг зохиогч',
               ),
             ),
             const SizedBox(height: 8),
@@ -163,7 +163,7 @@ class _AddEditSongScreenState extends State<AddEditSongScreen> {
                 textAlignVertical: TextAlignVertical.top,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
-                  hintText: 'Enter your lyrics here...',
+                  hintText: 'Үгийг энд оруулна уу...',
                 ),
               ),
             ),

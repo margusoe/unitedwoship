@@ -24,7 +24,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: const Text('Тохиргоо'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -32,7 +32,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Font Size',
+              'Үсгийн хэмжээ',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             Slider(
@@ -52,7 +52,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(
-                  'Dark Mode',
+                  'Шөнийн тохиргоо',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 ValueListenableBuilder<bool>(
