@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:unitedwoship/app_theme.dart';
 import 'package:unitedwoship/screens/add/add_screen.dart';
 import 'package:unitedwoship/screens/favorites/favorites_screen.dart';
 import 'package:unitedwoship/screens/profile/profile_screen.dart';
@@ -17,6 +18,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return CupertinoTabScaffold(
       tabBar: CupertinoTabBar(
+        activeColor: AppTheme.primaryColor,
+        inactiveColor: AppTheme.secondaryTextColor,
+        backgroundColor: AppTheme.backgroundColor,
+        border: null,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(

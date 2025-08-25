@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:unitedwoship/app_theme.dart';
 import 'package:unitedwoship/screens/home/home_screen.dart';
 
 void main() {
@@ -10,9 +11,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const CupertinoApp(
+    return CupertinoApp(
+      theme: AppTheme.cupertinoTheme,
       title: 'United Worship',
-      home: HomeScreen(),
+      home: const HomeScreen(),
     );
   }
 }

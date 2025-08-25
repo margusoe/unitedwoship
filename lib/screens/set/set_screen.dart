@@ -11,6 +11,9 @@ class _SetScreenState extends State<SetScreen> {
   @override
   Widget build(BuildContext context) {
     return const CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        middle: Text('Set'),
+      ),
       child: Center(
         child: Text('Set Screen'),
       ),
