@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:magtaalhundetgel/infrastructure/service_locator.dart';
-import 'package:magtaalhundetgel/infrastructure/user_settings.dart';
+import 'package:unitedwoship/infrastructure/service_locator.dart';
+import 'package:unitedwoship/infrastructure/user_settings.dart';
 
 class AppStateManager {
   final darkModeNotifier = ValueNotifier<bool>(false);

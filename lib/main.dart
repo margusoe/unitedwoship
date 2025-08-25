@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:magtaalhundetgel/screens/home/home_screen.dart';
+import 'package:unitedwoship/screens/home/home_screen.dart';
 
 void main() {
   runApp(const MyApp());

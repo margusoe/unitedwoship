@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
-import 'package:magtaalhundetgel/screens/add/add_screen.dart';
-import 'package:magtaalhundetgel/screens/favorites/favorites_screen.dart';
-import 'package:magtaalhundetgel/screens/profile/profile_screen.dart';
-import 'package:magtaalhundetgel/screens/search/search_screen.dart';
-import 'package:magtaalhundetgel/screens/set/set_screen.dart';
+import 'package:unitedwoship/screens/add/add_screen.dart';
+import 'package:unitedwoship/screens/favorites/favorites_screen.dart';
+import 'package:unitedwoship/screens/profile/profile_screen.dart';
+import 'package:unitedwoship/screens/search/search_screen.dart';
+import 'package:unitedwoship/screens/set/set_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -34,17 +34,17 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           BottomNavigationBarItem(
             icon: Icon(
-              CupertinoIcons.music_note,
-              size: 20,
-            ),
-            label: 'Set',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
               CupertinoIcons.add,
               size: 20,
             ),
             label: 'Add',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              CupertinoIcons.music_note,
+              size: 20,
+            ),
+            label: 'Set',
           ),
           BottomNavigationBarItem(
             icon: Icon(
@@ -63,9 +63,9 @@ class _HomeScreenState extends State<HomeScreen> {
             return CupertinoTabView(
                 builder: (context) => const FavoritesScreen());
           case 2:
-            return CupertinoTabView(builder: (context) => const SetScreen());
-          case 3:
             return CupertinoTabView(builder: (context) => const AddScreen());
+          case 3:
+            return CupertinoTabView(builder: (context) => const SetScreen());
           case 4:
             return CupertinoTabView(
                 builder: (context) => const ProfileScreen());
