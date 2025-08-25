@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:magtaalhundetgel/screens/add/add_screen.dart';
 import 'package:magtaalhundetgel/screens/favorites/favorites_screen.dart';
 import 'package:magtaalhundetgel/screens/profile/profile_screen.dart';
@@ -13,61 +13,66 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
-
-  static const List<Widget> _widgetOptions = <Widget>[
-    SearchScreen(),
-    FavoritesScreen(),
-    SetScreen(),
-    AddScreen(),
-    ProfileScreen(),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: Center(
-          child: _widgetOptions.elementAt(_selectedIndex),
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.search),
-              label: 'Search',
+    return CupertinoTabScaffold(
+      tabBar: CupertinoTabBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(
+              CupertinoIcons.search,
+              size: 20,
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.favorite),
-              label: 'Favorites',
+            label: 'Search',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              CupertinoIcons.heart,
+              size: 20,
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.music_note),
-              label: 'Set',
+            label: 'Favorites',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              CupertinoIcons.music_note,
+              size: 20,
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.add),
-              label: 'Add',
+            label: 'Set',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              CupertinoIcons.add,
+              size: 20,
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Profile',
+            label: 'Add',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              CupertinoIcons.person,
+              size: 20,
             ),
-          ],
-          currentIndex: _selectedIndex,
-          selectedItemColor: Colors.white,
-          unselectedItemColor: Colors.grey,
-          backgroundColor: Colors.grey[900],
-          iconSize: 30,
-          type: BottomNavigationBarType.fixed,
-          onTap: _onItemTapped,
-        ),
+            label: 'Profile',
+          ),
+        ],
       ),
+      tabBuilder: (BuildContext context, int index) {
+        switch (index) {
+          case 0:
+            return CupertinoTabView(builder: (context) => const SearchScreen());
+          case 1:
+            return CupertinoTabView(
+                builder: (context) => const FavoritesScreen());
+          case 2:
+            return CupertinoTabView(builder: (context) => const SetScreen());
+          case 3:
+            return CupertinoTabView(builder: (context) => const AddScreen());
+          case 4:
+            return CupertinoTabView(
+                builder: (context) => const ProfileScreen());
+          default:
+            return CupertinoTabView(builder: (context) => const SearchScreen());
+        }
+      },
     );
   }
 }
