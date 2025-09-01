@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:unitedwoship/app_theme.dart';
 
@@ -32,13 +31,6 @@ class _AddScreenState extends State<AddScreen> {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         middle: const Text('Add Song'),
-        leading: CupertinoButton(
-          padding: EdgeInsets.zero,
-          child: const Icon(CupertinoIcons.xmark, size: 24),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
       ),
       child: SafeArea(
         child: Column(
@@ -70,6 +62,7 @@ class _AddScreenState extends State<AddScreen> {
                       placeholderStyle: AppTheme.hintStyle,
                       decoration: AppTheme.textFieldDecoration,
                       padding: const EdgeInsets.all(12.0),
+                      textAlignVertical: TextAlignVertical.top,
                     ),
                     const SizedBox(height: 16),
                     const Text('Author', style: AppTheme.titleStyle),
@@ -112,9 +105,11 @@ class _AddScreenState extends State<AddScreen> {
               padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 16.0),
               child: SizedBox(
                 width: double.infinity,
+                height: 40,
                 child: CupertinoButton(
                   color: AppTheme.primaryColor,
-                  child: const Text('Submit', style: TextStyle(color: AppTheme.onPrimaryColor)),
+                  child: const Text('Submit',
+                      style: TextStyle(color: AppTheme.onPrimaryColor)),
                   onPressed: () {
                     // TODO: Implement submit functionality
                   },
