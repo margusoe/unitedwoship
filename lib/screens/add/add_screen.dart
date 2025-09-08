@@ -105,11 +105,24 @@ class _AddScreenState extends State<AddScreen> {
               padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 16.0),
               child: SizedBox(
                 width: double.infinity,
-                height: 40,
+                height: 40, // Explicitly set height to 40px
                 child: CupertinoButton(
+                  padding:
+                      EdgeInsets.zero, // Remove default padding to fit height
                   color: AppTheme.primaryColor,
-                  child: const Text('Submit',
-                      style: TextStyle(color: AppTheme.onPrimaryColor)),
+                  borderRadius: BorderRadius.circular(4),
+                  child: const FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      'Submit',
+                      style: TextStyle(
+                          color: AppTheme.onPrimaryColor,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                   onPressed: () {
                     // TODO: Implement submit functionality
                   },
