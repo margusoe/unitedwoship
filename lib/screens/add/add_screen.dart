@@ -56,8 +56,9 @@ class _AddScreenState extends State<AddScreen> {
                     const SizedBox(height: 8),
                     CupertinoTextField(
                       controller: _lyricsController,
-                      placeholder: 'Enter lyrics',
-                      maxLines: 5,
+                      placeholder: 'Enter lyrics \n\n\n\n',
+                      minLines: 5,
+                      maxLines: null,
                       style: AppTheme.bodyStyle,
                       placeholderStyle: AppTheme.hintStyle,
                       decoration: AppTheme.textFieldDecoration,
