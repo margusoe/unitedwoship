@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:unitedwoship/app_theme.dart';
 import 'package:unitedwoship/screens/add/add_screen.dart';
 import 'package:unitedwoship/screens/favorites/favorites_screen.dart';
-import 'package:unitedwoship/screens/profile/profile_screen.dart';
+import 'package:unitedwoship/screens/settings/settings_screen.dart';
 import 'package:unitedwoship/screens/search/search_screen.dart';
 import 'package:unitedwoship/screens/set/set_screen.dart';
 
