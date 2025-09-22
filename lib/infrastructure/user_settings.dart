@@ -1,16 +1,21 @@
+import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserSettings {
   late final SharedPreferences prefs;
 
+  final ValueNotifier<bool> isDarkMode = ValueNotifier<bool>(false);
+
   Future<void> init() async {
     prefs = await SharedPreferences.getInstance();
+    isDarkMode.value = getDarkMode();
   }
 
   static const _isDarkModeKey = "isDarkMode";
 
   Future<void> setDarkMode(bool isDarkMode) async {
     await prefs.setBool(_isDarkModeKey, isDarkMode);
+    this.isDarkMode.value = isDarkMode;
   }
 
   bool getDarkMode() {

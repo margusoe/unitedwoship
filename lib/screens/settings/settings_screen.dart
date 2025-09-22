@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:unitedwoship/app_theme.dart';
+import 'package:unitedwoship/infrastructure/service_locator.dart';
+import 'package:unitedwoship/infrastructure/user_settings.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -12,9 +14,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
   double _fontSize = 16.0;
   int _selectedTheme = 0; // 0 for light, 1 for dark
 
+  final userSettings = getIt<UserSettings>();
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedTheme = userSettings.getDarkMode() ? 1 : 0;
+    _fontSize = userSettings.getFontSize();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = _selectedTheme == 1;
+    final theme = isDarkMode ? AppTheme.darkTheme : AppTheme.lightTheme;
+    final titleStyle = isDarkMode ? AppTheme.darkTitleStyle : AppTheme.lightTitleStyle;
+    final hintStyle = isDarkMode ? AppTheme.darkHintStyle : AppTheme.lightHintStyle;
+    final surfaceColor = isDarkMode ? AppTheme.darkSurfaceColor : AppTheme.lightSurfaceColor;
+    final secondaryTextColor = isDarkMode ? AppTheme.darkSecondaryTextColor : AppTheme.lightSecondaryTextColor;
+
     return CupertinoPageScaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       child: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
@@ -24,25 +43,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 Container(
                   width: 120,
                   height: 120,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: AppTheme.surfaceColor,
+                    color: surfaceColor,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     CupertinoIcons.person_fill,
-                    color: AppTheme.secondaryTextColor,
+                    color: secondaryTextColor,
                     size: 60,
                   ),
                 ),
                 const SizedBox(height: 16),
                 Text(
                   'Ethan Clark',
-                  style: AppTheme.titleStyle.copyWith(fontSize: 24),
+                  style: titleStyle.copyWith(fontSize: 24),
                 ),
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   'ethan.clark@email.com',
-                  style: AppTheme.hintStyle,
+                  style: hintStyle,
                 ),
                 const SizedBox(height: 32),
               ],
@@ -52,22 +71,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
             delegate: SliverChildListDelegate(
               [
                 CupertinoListTile(
-                  title: const Text('Edit Profile'),
+                  title: Text('Edit Profile', style: titleStyle),
                   trailing: const CupertinoListTileChevron(),
                   onTap: () {},
                 ),
                 CupertinoListTile(
-                  title: const Text('Language'),
-                  additionalInfo: const Text('English'),
+                  title: Text('Language', style: titleStyle),
+                  additionalInfo: Text('English', style: hintStyle),
                   onTap: () {},
                 ),
                 CupertinoListTile(
-                  title: const Text('Font size'),
-                  additionalInfo: const Text('20'),
-                  onTap: () {},
+                  title: Text('Font Size', style: titleStyle),
+                  additionalInfo: Text(_fontSize.toStringAsFixed(0), style: hintStyle),
+                  subtitle: CupertinoSlider(
+                    value: _fontSize,
+                    min: 12,
+                    max: 24,
+                    onChanged: (value) {
+                      setState(() {
+                        _fontSize = value;
+                        userSettings.setFontSize(value);
+                      });
+                    },
+                  ),
                 ),
                 CupertinoListTile(
-                    title: const Text('Appearance'),
+                    title: Text('Appearance', style: titleStyle),
                     additionalInfo: CupertinoSlidingSegmentedControl<int>(
                       children: const {
                         0: Text('Light'),
@@ -77,11 +106,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       onValueChanged: (value) {
                         setState(() {
                           _selectedTheme = value!;
+                          userSettings.setDarkMode(value == 1);
                         });
                       },
                     )),
                 CupertinoListTile(
-                  title: const Text('About'),
+                  title: Text('About', style: titleStyle),
                   trailing: const CupertinoListTileChevron(),
                   onTap: () {},
                 ),

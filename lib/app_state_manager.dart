@@ -1,16 +1,28 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:unitedwoship/app_theme.dart';
 import 'package:unitedwoship/infrastructure/service_locator.dart';
 import 'package:unitedwoship/infrastructure/user_settings.dart';
 
 class AppStateManager {
-  final darkModeNotifier = ValueNotifier<bool>(false);
+  final darkModeNotifier =
+      ValueNotifier<CupertinoThemeData>(AppTheme.darkTheme);
+  CupertinoThemeData get theme => darkModeNotifier.value;
+
   void init() {
-    darkModeNotifier.value = getIt<UserSettings>().getDarkMode();
+    final isDarkMode = getIt<UserSettings>().getDarkMode();
+    isDarkMode
+        ? darkModeNotifier.value = AppTheme.darkTheme
+        : darkModeNotifier.value = AppTheme.lightTheme;
   }
 
   void toggleDarkMode() {
-    darkModeNotifier.value = !darkModeNotifier.value;
-    getIt<UserSettings>().setDarkMode(darkModeNotifier.value);
+    final isDarkMode = !getIt<UserSettings>().getDarkMode();
+    isDarkMode
+        ? darkModeNotifier.value = AppTheme.darkTheme
+        : darkModeNotifier.value = AppTheme.lightTheme;
+
+    getIt<UserSettings>().setDarkMode(isDarkMode);
   }
 
   void setFontSize(double value) {

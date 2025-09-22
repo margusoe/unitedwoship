@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
+import 'package:unitedwoship/app_state_manager.dart';
 import 'package:unitedwoship/app_theme.dart';
+import 'package:unitedwoship/infrastructure/service_locator.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -9,8 +11,10 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
+  final appstatemanager = getIt<AppStateManager>();
   @override
   Widget build(BuildContext context) {
+    final theme = appstatemanager.theme;
     return CupertinoPageScaffold(
       navigationBar: const CupertinoNavigationBar(
         middle: Text('Search'),
@@ -25,7 +29,7 @@ class _SearchScreenState extends State<SearchScreen> {
             Text(
               'Find all the best worship songs, artists and albums. All in one place',
               textAlign: TextAlign.center,
-              style: AppTheme.bodyStyle.copyWith(fontSize: 18),
+              style: theme.textTheme.textStyle.copyWith(fontSize: 18),
             ),
           ],
         ),

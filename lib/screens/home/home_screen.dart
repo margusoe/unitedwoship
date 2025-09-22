@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
+import 'package:unitedwoship/app_state_manager.dart';
 import 'package:unitedwoship/app_theme.dart';
+import 'package:unitedwoship/infrastructure/service_locator.dart';
 import 'package:unitedwoship/screens/add/add_screen.dart';
 import 'package:unitedwoship/screens/favorites/favorites_screen.dart';
 import 'package:unitedwoship/screens/settings/settings_screen.dart';
@@ -14,11 +16,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final appstatemanager = getIt<AppStateManager>();
   @override
   Widget build(BuildContext context) {
+    final theme = appstatemanager.theme;
     return CupertinoTabScaffold(
       tabBar: CupertinoTabBar(
-        activeColor: AppTheme.primaryColor,
+        activeColor: theme.primaryColor,
         inactiveColor: AppTheme.secondaryTextColor,
         backgroundColor: AppTheme.backgroundColor,
         border: null,
