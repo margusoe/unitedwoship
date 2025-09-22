@@ -53,10 +53,10 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           BottomNavigationBarItem(
             icon: Icon(
-              CupertinoIcons.person,
+              CupertinoIcons.settings,
               size: 20,
             ),
-            label: 'Profile',
+            label: 'Settings',
           ),
         ],
       ),
@@ -73,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
             return CupertinoTabView(builder: (context) => const SetScreen());
           case 4:
             return CupertinoTabView(
-                builder: (context) => const ProfileScreen());
+                builder: (context) => const SettingsScreen());
           default:
             return CupertinoTabView(builder: (context) => const SearchScreen());
         }
