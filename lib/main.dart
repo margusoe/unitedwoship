@@ -8,6 +8,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   setupServiceLocator();
   await getIt<UserSettings>().init();
+  getIt<AppStateManager>().init();
   runApp(const MyApp());
 }
 
