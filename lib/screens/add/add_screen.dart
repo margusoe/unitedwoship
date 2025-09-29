@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
+import 'package:unitedwoship/app_state_manager.dart';
 import 'package:unitedwoship/app_theme.dart';
+import 'package:unitedwoship/infrastructure/service_locator.dart';
 
 class AddScreen extends StatefulWidget {
   const AddScreen({super.key});
@@ -15,6 +17,9 @@ class _AddScreenState extends State<AddScreen> {
   final _authorController = TextEditingController();
   final _melodyAuthorController = TextEditingController();
   final _youtubeLinkController = TextEditingController();
+  // AppStateManager is still needed to provide the theme for the root CupertinoApp
+  // and for any direct state management, but theme properties are accessed via context.
+  final appstatemanager = getIt<AppStateManager>();
 
   @override
   void dispose() {
@@ -28,9 +33,13 @@ class _AddScreenState extends State<AddScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // We no longer need isDarkMode here to pick styles, as AppTheme methods handle it.
+    // final isDarkMode = getIt<UserSettings>().getDarkMode(); // No longer directly used for styling
+    // final theme = appstatemanager.theme; // This is the full CupertinoThemeData for the app.
+
     return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: const Text('Add Song'),
+      navigationBar: const CupertinoNavigationBar(
+        middle: Text('Add Song'),
       ),
       child: SafeArea(
         child: Column(
@@ -41,61 +50,86 @@ class _AddScreenState extends State<AddScreen> {
                 child: ListView(
                   padding: const EdgeInsets.all(16.0),
                   children: [
-                    const Text('Song Title', style: AppTheme.titleStyle),
+                    Text(
+                      'Song Title',
+                      style: AppTheme.titleStyle(context), // <--- Refactored
+                    ),
                     const SizedBox(height: 8),
                     CupertinoTextField(
                       controller: _songTitleController,
                       placeholder: 'Enter song title',
-                      style: AppTheme.bodyStyle,
-                      placeholderStyle: AppTheme.hintStyle,
-                      decoration: AppTheme.textFieldDecoration,
+                      style: AppTheme.bodyStyle(context), // <--- Refactored
+                      placeholderStyle:
+                          AppTheme.hintStyle(context), // <--- Refactored
+                      decoration: AppTheme.textFieldDecoration(
+                          context), // <--- Refactored
                       padding: const EdgeInsets.all(12.0),
                     ),
                     const SizedBox(height: 16),
-                    const Text('Lyrics', style: AppTheme.titleStyle),
+                    Text(
+                      'Lyrics',
+                      style: AppTheme.titleStyle(context), // <--- Refactored
+                    ),
                     const SizedBox(height: 8),
                     CupertinoTextField(
                       controller: _lyricsController,
                       placeholder: 'Enter lyrics \n\n\n\n',
                       minLines: 5,
                       maxLines: null,
-                      style: AppTheme.bodyStyle,
-                      placeholderStyle: AppTheme.hintStyle,
-                      decoration: AppTheme.textFieldDecoration,
+                      style: AppTheme.bodyStyle(context), // <--- Refactored
+                      placeholderStyle:
+                          AppTheme.hintStyle(context), // <--- Refactored
+                      decoration: AppTheme.textFieldDecoration(
+                          context), // <--- Refactored
                       padding: const EdgeInsets.all(12.0),
                       textAlignVertical: TextAlignVertical.top,
                     ),
                     const SizedBox(height: 16),
-                    const Text('Author', style: AppTheme.titleStyle),
+                    Text(
+                      'Author',
+                      style: AppTheme.titleStyle(context), // <--- Refactored
+                    ),
                     const SizedBox(height: 8),
                     CupertinoTextField(
                       controller: _authorController,
                       placeholder: 'Enter author',
-                      style: AppTheme.bodyStyle,
-                      placeholderStyle: AppTheme.hintStyle,
-                      decoration: AppTheme.textFieldDecoration,
+                      style: AppTheme.bodyStyle(context), // <--- Refactored
+                      placeholderStyle:
+                          AppTheme.hintStyle(context), // <--- Refactored
+                      decoration: AppTheme.textFieldDecoration(
+                          context), // <--- Refactored
                       padding: const EdgeInsets.all(12.0),
                     ),
                     const SizedBox(height: 16),
-                    const Text('Melody Author', style: AppTheme.titleStyle),
+                    Text(
+                      'Melody Author',
+                      style: AppTheme.titleStyle(context), // <--- Refactored
+                    ),
                     const SizedBox(height: 8),
                     CupertinoTextField(
                       controller: _melodyAuthorController,
                       placeholder: 'Enter melody author',
-                      style: AppTheme.bodyStyle,
-                      placeholderStyle: AppTheme.hintStyle,
-                      decoration: AppTheme.textFieldDecoration,
+                      style: AppTheme.bodyStyle(context), // <--- Refactored
+                      placeholderStyle:
+                          AppTheme.hintStyle(context), // <--- Refactored
+                      decoration: AppTheme.textFieldDecoration(
+                          context), // <--- Refactored
                       padding: const EdgeInsets.all(12.0),
                     ),
                     const SizedBox(height: 16),
-                    const Text('YouTube Link', style: AppTheme.titleStyle),
+                    Text(
+                      'YouTube Link',
+                      style: AppTheme.titleStyle(context), // <--- Refactored
+                    ),
                     const SizedBox(height: 8),
                     CupertinoTextField(
                       controller: _youtubeLinkController,
                       placeholder: 'Enter YouTube link',
-                      style: AppTheme.bodyStyle,
-                      placeholderStyle: AppTheme.hintStyle,
-                      decoration: AppTheme.textFieldDecoration,
+                      style: AppTheme.bodyStyle(context), // <--- Refactored
+                      placeholderStyle:
+                          AppTheme.hintStyle(context), // <--- Refactored
+                      decoration: AppTheme.textFieldDecoration(
+                          context), // <--- Refactored
                       padding: const EdgeInsets.all(12.0),
                     ),
                   ],
@@ -106,18 +140,18 @@ class _AddScreenState extends State<AddScreen> {
               padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 16.0),
               child: SizedBox(
                 width: double.infinity,
-                height: 40, // Explicitly set height to 40px
+                height: 40,
                 child: CupertinoButton(
-                  padding:
-                      EdgeInsets.zero, // Remove default padding to fit height
-                  color: AppTheme.primaryColor,
+                  padding: EdgeInsets.zero,
+                  color: AppTheme.primaryColor(context), // <--- Refactored
                   borderRadius: BorderRadius.circular(4),
-                  child: const FittedBox(
+                  child: FittedBox(
                     fit: BoxFit.scaleDown,
                     child: Text(
                       'Submit',
                       style: TextStyle(
-                          color: AppTheme.onPrimaryColor,
+                          color: AppTheme.onPrimaryColor(
+                              context), // <--- Refactored
                           fontSize: 13,
                           fontWeight: FontWeight.w600),
                       maxLines: 1,

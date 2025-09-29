@@ -27,10 +27,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     final isDarkMode = _selectedTheme == 1;
     final theme = isDarkMode ? AppTheme.darkTheme : AppTheme.lightTheme;
-    final titleStyle = isDarkMode ? AppTheme.darkTitleStyle : AppTheme.lightTitleStyle;
-    final hintStyle = isDarkMode ? AppTheme.darkHintStyle : AppTheme.lightHintStyle;
-    final surfaceColor = isDarkMode ? AppTheme.darkSurfaceColor : AppTheme.lightSurfaceColor;
-    final secondaryTextColor = isDarkMode ? AppTheme.darkSecondaryTextColor : AppTheme.lightSecondaryTextColor;
+    final titleStyle = AppTheme.titleStyle(context);
+    final hintStyle = AppTheme.hintStyle(context);
+    final surfaceColor = AppTheme.surfaceColor(context);
+    final secondaryTextColor = AppTheme.secondaryColor(context);
 
     return CupertinoPageScaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -82,7 +82,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 CupertinoListTile(
                   title: Text('Font Size', style: titleStyle),
-                  additionalInfo: Text(_fontSize.toStringAsFixed(0), style: hintStyle),
+                  additionalInfo:
+                      Text(_fontSize.toStringAsFixed(0), style: hintStyle),
                   subtitle: CupertinoSlider(
                     value: _fontSize,
                     min: 12,
