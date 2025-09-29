@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:unitedwoship/app_state_manager.dart';
 import 'package:unitedwoship/app_theme.dart';
 import 'package:unitedwoship/infrastructure/service_locator.dart';
-import 'package:unitedwoship/infrastructure/user_settings.dart';
 import 'package:unitedwoship/screens/add/add_screen.dart';
 import 'package:unitedwoship/screens/favorites/favorites_screen.dart';
 import 'package:unitedwoship/screens/settings/settings_screen.dart';

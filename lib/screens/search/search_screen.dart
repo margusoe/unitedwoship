@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:unitedwoship/app_state_manager.dart';
-import 'package:unitedwoship/app_theme.dart';
 import 'package:unitedwoship/infrastructure/service_locator.dart';
 
 class SearchScreen extends StatefulWidget {

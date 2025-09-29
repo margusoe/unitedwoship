@@ -60,7 +60,9 @@ class AppTheme {
       brightness == Brightness.dark ? darkSurfaceColor : lightSurfaceColor;
 
   static Color _getBackgroundColor(Brightness brightness) =>
-      brightness == Brightness.dark ? darkSurfaceColor : lightSurfaceColor;
+      brightness == Brightness.dark
+          ? darkBackgroundColor
+          : lightBackgroundColor;
 
   static Color _getPrimaryColor(Brightness brightness) =>
       brightness == Brightness.dark ? darkPrimaryColor : lightPrimaryColor;
