@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:unitedwoship/app_theme.dart';
 import 'package:unitedwoship/infrastructure/service_locator.dart';
 import 'package:unitedwoship/infrastructure/user_settings.dart';
+import 'package:unitedwoship/app_state_manager.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -25,15 +26,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = _selectedTheme == 1;
-    final theme = isDarkMode ? AppTheme.darkTheme : AppTheme.lightTheme;
     final titleStyle = AppTheme.titleStyle(context);
     final hintStyle = AppTheme.hintStyle(context);
     final surfaceColor = AppTheme.surfaceColor(context);
     final secondaryTextColor = AppTheme.secondaryColor(context);
 
     return CupertinoPageScaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
+      backgroundColor: AppTheme.backgroundColor(context),
       child: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
@@ -105,9 +104,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       },
                       groupValue: _selectedTheme,
                       onValueChanged: (value) {
+                        if (value == null) return;
                         setState(() {
-                          _selectedTheme = value!;
-                          userSettings.setDarkMode(value == 1);
+                          _selectedTheme = value;
+                          getIt<AppStateManager>().setDarkMode(value == 1);
                         });
                       },
                     )),

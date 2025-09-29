@@ -17,8 +17,7 @@ class AppStateManager {
     _setTheme(isDarkMode);
   }
 
-  void toggleDarkMode() {
-    final isDarkMode = !getIt<UserSettings>().getDarkMode();
+  void setDarkMode(bool isDarkMode) {
     _setTheme(isDarkMode);
     getIt<UserSettings>().setDarkMode(isDarkMode);
   }

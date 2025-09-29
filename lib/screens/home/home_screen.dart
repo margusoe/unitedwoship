@@ -21,17 +21,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = getIt<UserSettings>().getDarkMode();
-    final theme = appstatemanager.theme;
     return CupertinoTabScaffold(
       tabBar: CupertinoTabBar(
-        activeColor: theme.primaryColor,
-        inactiveColor: isDarkMode
-            ? AppTheme.darkSecondaryTextColor
-            : AppTheme.lightSecondaryTextColor,
-        backgroundColor: isDarkMode
-            ? AppTheme.darkBackgroundColor
-            : AppTheme.lightBackgroundColor,
+        activeColor: AppTheme.primaryColor(context),
+        inactiveColor: AppTheme.secondaryColor(context),
+        backgroundColor: AppTheme.backgroundColor(context),
         border: null,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(

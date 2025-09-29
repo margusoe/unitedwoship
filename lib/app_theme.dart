@@ -59,6 +59,9 @@ class AppTheme {
   static Color _getSurfaceColor(Brightness brightness) =>
       brightness == Brightness.dark ? darkSurfaceColor : lightSurfaceColor;
 
+  static Color _getBackgroundColor(Brightness brightness) =>
+      brightness == Brightness.dark ? darkSurfaceColor : lightSurfaceColor;
+
   static Color _getPrimaryColor(Brightness brightness) =>
       brightness == Brightness.dark ? darkPrimaryColor : lightPrimaryColor;
 
@@ -106,6 +109,9 @@ class AppTheme {
       _getHintStyle(CupertinoTheme.of(context).brightness ?? Brightness.light);
 
   static Color surfaceColor(BuildContext context) => _getSurfaceColor(
+      CupertinoTheme.of(context).brightness ?? Brightness.light);
+
+  static Color backgroundColor(BuildContext context) => _getBackgroundColor(
       CupertinoTheme.of(context).brightness ?? Brightness.light);
 
   static Color primaryColor(BuildContext context) => _getPrimaryColor(
