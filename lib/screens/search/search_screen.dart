@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:unitedwoship/app_state_manager.dart';
 import 'package:unitedwoship/infrastructure/service_locator.dart';
+import 'package:unitedwoship/infrastructure/web_api.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -11,6 +13,20 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final appstatemanager = getIt<AppStateManager>();
+  final webApi = getIt<WebApi>();
+  late Future<List<Song>> _futureSongs;
+
+  @override
+  void initState() {
+    super.initState();
+    _futureSongs = _loadSongs();
+  }
+
+  Future<List<Song>> _loadSongs() async {
+    await webApi.loadSongs();
+    return webApi.songs;
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = appstatemanager.theme;
@@ -29,6 +45,36 @@ class _SearchScreenState extends State<SearchScreen> {
               'Find all the best worship songs, artists and albums. All in one place',
               textAlign: TextAlign.center,
               style: theme.textTheme.textStyle.copyWith(fontSize: 18),
+            ),
+            const SizedBox(height: 20),
+            Expanded(
+              child: FutureBuilder<List<Song>>(
+                future: _futureSongs,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CupertinoActivityIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(child: Text('No songs found.'));
+                  } else {
+                    // If data is loaded successfully, display it in a ListView
+                    final songs = snapshot.data!;
+                    return ListView.builder(
+                      itemCount: songs.length,
+                      itemBuilder: (context, index) {
+                        final song = songs[index];
+                        return Material(
+                          child: ListTile(
+                            title: Text(song.title),
+                            subtitle: Text('Key: ${song.songkey}'),
+                          ),
+                        );
+                      },
+                    );
+                  }
+                },
+              ),
             ),
           ],
         ),
