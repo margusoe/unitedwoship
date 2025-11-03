@@ -71,7 +71,7 @@ class _SearchScreenState extends State<SearchScreen> {
                             Navigator.push(
                               context,
                               CupertinoPageRoute(
-                                builder: (context) => SongScreen(song: song),
+                                builder: (context) => SongScreen(songId: song.id),
                               ),
                             );
                           },

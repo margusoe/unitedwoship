@@ -1,12 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:unitedwoship/app_theme.dart';
+import 'package:unitedwoship/infrastructure/service_locator.dart';
 import 'package:unitedwoship/infrastructure/web_api.dart';
 import 'package:xml/xml.dart';
 
 class SongScreen extends StatefulWidget {
-  final Song song;
-  const SongScreen({super.key, required this.song});
+  final int songId;
+  const SongScreen({super.key, required this.songId});
 
   @override
   State<SongScreen> createState() => _SongScreenState();
@@ -15,18 +16,18 @@ class SongScreen extends StatefulWidget {
 class _SongScreenState extends State<SongScreen> {
   double _scrollSpeed = 50;
   late String _currentKey;
+  late Song song;
+  final webApi = getIt<WebApi>();
 
   @override
   void initState() {
     super.initState();
-    _currentKey = widget.song.songkey;
+    song = webApi.getSong(widget.songId);
+    _currentKey = song.songkey;
   }
 
   @override
   Widget build(BuildContext context) {
-    final document = XmlDocument.parse(widget.song.songxml);
-    final lines = document.findAllElements('l');
-
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         leading: CupertinoNavigationBarBackButton(
@@ -35,9 +36,9 @@ class _SongScreenState extends State<SongScreen> {
         middle: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(widget.song.title),
+            Text(song.title),
             Text(
-                widget.song.info
+                song.info
                     .firstWhere((element) => element.type == 'A',
                         orElse: () =>
                             SongInfo(value: 'Unknown Artist', type: 'A'))
@@ -55,42 +56,25 @@ class _SongScreenState extends State<SongScreen> {
         children: [
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  for (var line in lines)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: RichText(
-                        text: TextSpan(
-                          children: [
-                            for (var node in line.children)
-                              if (node is XmlElement && node.name.local == 's')
-                                TextSpan(
-                                  text: node.text,
-                                  style: TextStyle(
-                                    color: AppTheme.primaryColor(context),
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                )
-                              else if (node is XmlText)
-                                TextSpan(
-                                  text: node.text,
-                                  style: AppTheme.bodyStyle(context),
-                                ),
-                          ],
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
+                padding: const EdgeInsets.all(16.0), child: Text(song.songxml)),
           ),
           _buildBottomControls(),
         ],
       ),
     );
+  }
+
+  bool _isChordLine(XmlElement line) {
+    if (line.children.isEmpty) return false;
+    bool hasChords = false;
+    for (var node in line.children) {
+      if (node is XmlElement && node.name.local == 's') {
+        hasChords = true;
+      } else if (node is XmlText && node.text.trim().isNotEmpty) {
+        return false;
+      }
+    }
+    return hasChords;
   }
 
   Widget _buildBottomControls() {
@@ -130,7 +114,12 @@ class _SongScreenState extends State<SongScreen> {
                       onPressed: () {},
                       child: const Icon(CupertinoIcons.minus),
                     ),
-                    Text('Key: $_currentKey'),
+                    Expanded(
+                      child: Text(
+                        'Key: $_currentKey',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
                     CupertinoButton(
                       onPressed: () {},
                       child: const Icon(CupertinoIcons.add),
