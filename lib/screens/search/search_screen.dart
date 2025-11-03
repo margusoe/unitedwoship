@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:unitedwoship/app_state_manager.dart';
 import 'package:unitedwoship/infrastructure/service_locator.dart';
 import 'package:unitedwoship/infrastructure/web_api.dart';
+import 'package:unitedwoship/screens/song/song_screen.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -64,11 +64,17 @@ class _SearchScreenState extends State<SearchScreen> {
                       itemCount: songs.length,
                       itemBuilder: (context, index) {
                         final song = songs[index];
-                        return Material(
-                          child: ListTile(
-                            title: Text(song.title),
-                            subtitle: Text('Key: ${song.songkey}'),
-                          ),
+                        return CupertinoListTile(
+                          title: Text(song.title),
+                          subtitle: Text('Key: ${song.songkey}'),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              CupertinoPageRoute(
+                                builder: (context) => SongScreen(song: song),
+                              ),
+                            );
+                          },
                         );
                       },
                     );
