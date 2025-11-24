@@ -27,6 +27,7 @@ class _MyAppState extends State<MyApp> {
         valueListenable: appstatemanager.darkModeNotifier,
         builder: (context, theme, child) {
           return CupertinoApp(
+            debugShowCheckedModeBanner: false,
             theme: theme, // This is where the theme is applied
             title: 'United Worship',
             home: const HomeScreen(),

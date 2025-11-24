@@ -5,6 +5,7 @@ import 'package:unitedwoship/app_theme.dart';
 import 'package:unitedwoship/infrastructure/service_locator.dart';
 import 'package:unitedwoship/infrastructure/web_api.dart';
 import 'package:unitedwoship/screens/song/song_manager.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SongScreen extends StatefulWidget {
   final int songId;
@@ -36,6 +37,47 @@ class _SongScreenState extends State<SongScreen> {
             },
           ),
           middle: Text(song.title),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CupertinoButton(
+                padding: EdgeInsets.zero,
+                onPressed: () {
+                  // TODO: Implement favorite functionality
+                },
+                child: const Icon(CupertinoIcons.heart),
+              ),
+              if (song.youtubeLink.isNotEmpty)
+                CupertinoButton(
+                  padding: EdgeInsets.zero,
+                  onPressed: () async {
+                    final uri = Uri.parse(song.youtubeLink);
+                    if (await canLaunchUrl(uri)) {
+                      await launchUrl(uri);
+                    } else {
+                      // Handle error: could not launch URL
+                      // For example, show a CupertinoAlertDialog
+                      showCupertinoDialog(
+                        context: context,
+                        builder: (BuildContext context) => CupertinoAlertDialog(
+                          title: const Text('Error'),
+                          content: const Text('Could not open YouTube link.'),
+                          actions: <CupertinoDialogAction>[
+                            CupertinoDialogAction(
+                              child: const Text('OK'),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                  },
+                  child: const Icon(CupertinoIcons.play_rectangle),
+                ),
+            ],
+          ),
         ),
         child: Padding(
           padding: const EdgeInsets.all(20.0),

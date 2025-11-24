@@ -41,12 +41,6 @@ class _SearchScreenState extends State<SearchScreen> {
             const SizedBox(height: 20),
             const CupertinoSearchTextField(),
             const SizedBox(height: 20),
-            Text(
-              'Find all the best worship songs, artists and albums. All in one place',
-              textAlign: TextAlign.center,
-              style: theme.textTheme.textStyle.copyWith(fontSize: 18),
-            ),
-            const SizedBox(height: 20),
             Expanded(
               child: FutureBuilder<List<Song>>(
                 future: _futureSongs,
@@ -71,7 +65,8 @@ class _SearchScreenState extends State<SearchScreen> {
                             Navigator.push(
                               context,
                               CupertinoPageRoute(
-                                builder: (context) => SongScreen(songId: song.id),
+                                builder: (context) =>
+                                    SongScreen(songId: song.id),
                               ),
                             );
                           },

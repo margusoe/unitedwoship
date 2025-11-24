@@ -30,17 +30,33 @@ class Song {
   final String songkey;
   final String songxml;
   final List<SongInfo> info;
+  final String youtubeLink;
 
-  Song({
-    required this.alternativeTitles,
-    required this.id,
-    required this.title,
-    required this.songkey,
-    required this.songxml,
-    required this.info,
-  });
+  Song(
+      {required this.alternativeTitles,
+      required this.id,
+      required this.title,
+      required this.songkey,
+      required this.songxml,
+      required this.info,
+      required this.youtubeLink});
 
   factory Song.fromJson(Map<String, dynamic> json) {
+    String youtubeLink = '';
+    if (json['f'] != null && json['f'] is List) {
+      for (var mediaItem in json['f']) {
+        if (mediaItem is Map<String, dynamic> &&
+            mediaItem['Z'] != null &&
+            mediaItem['Z']['type'] == 'youtube') {
+          youtubeLink = mediaItem['p'] ?? '';
+          break;
+        }
+      }
+    }
+    if (youtubeLink == '') {
+      print(json['8']);
+    }
+
     return Song(
       alternativeTitles: json['A'] != null ? List<String>.from(json['A']) : [],
       id: json['i'] ?? 0,
@@ -50,6 +66,7 @@ class Song {
       info: json['I'] != null
           ? (json['I'] as List).map((i) => SongInfo.fromJson(i)).toList()
           : [],
+      youtubeLink: youtubeLink,
     );
   }
 }
