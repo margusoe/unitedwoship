@@ -28,20 +28,29 @@ class _SongScreenState extends State<SongScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(20.0),
-      child: LyricsRenderer(
-          widgetPadding: 64,
-          lyrics: _manager.formatLyrics(song.songxml),
-          textStyle: Theme.of(context)
-              .textTheme
-              .bodyMedium!
-              .copyWith(fontSize: _manager.fontSize),
-          chordStyle: TextStyle(
-              fontSize: _manager.fontSize,
-              color: Theme.of(context).colorScheme.primary),
-          transposeIncrement: _transposeValue,
-          onTapChord: (chord) {}),
-    );
+    return CupertinoPageScaffold(
+        navigationBar: CupertinoNavigationBar(
+          leading: CupertinoNavigationBarBackButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          middle: Text(song.title),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: LyricsRenderer(
+              widgetPadding: 64,
+              lyrics: _manager.formatLyrics(song.songxml),
+              textStyle: Theme.of(context)
+                  .textTheme
+                  .bodyMedium!
+                  .copyWith(fontSize: _manager.fontSize),
+              chordStyle: TextStyle(
+                  fontSize: _manager.fontSize,
+                  color: Theme.of(context).colorScheme.primary),
+              transposeIncrement: _transposeValue,
+              onTapChord: (chord) {}),
+        ));
   }
 }
