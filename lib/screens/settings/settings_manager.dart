@@ -8,4 +8,8 @@ class SettingsManager {
     final isDarkMode = !getIt<UserSettings>().getDarkMode();
     appstatemanager.setDarkMode(isDarkMode);
   }
+
+  void dragFontSize(double value) {
+    appstatemanager.setFontSize(value);
+  }
 }

@@ -3,6 +3,7 @@ import 'package:unitedwoship/app_theme.dart';
 import 'package:unitedwoship/infrastructure/service_locator.dart';
 import 'package:unitedwoship/infrastructure/user_settings.dart';
 import 'package:unitedwoship/app_state_manager.dart';
+import 'package:unitedwoship/screens/about/about_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -38,29 +39,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
           SliverToBoxAdapter(
             child: Column(
               children: [
-                const SizedBox(height: 24),
-                Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: surfaceColor,
-                  ),
-                  child: Icon(
-                    CupertinoIcons.person_fill,
-                    color: secondaryTextColor,
-                    size: 60,
-                  ),
-                ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 60),
                 Text(
                   'Ethan Clark',
                   style: titleStyle.copyWith(fontSize: 24),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'ethan.clark@email.com',
-                  style: hintStyle,
                 ),
                 const SizedBox(height: 32),
               ],
@@ -69,32 +51,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           SliverList(
             delegate: SliverChildListDelegate(
               [
-                CupertinoListTile(
-                  title: Text('Edit Profile', style: titleStyle),
-                  trailing: const CupertinoListTileChevron(),
-                  onTap: () {},
-                ),
-                CupertinoListTile(
-                  title: Text('Language', style: titleStyle),
-                  additionalInfo: Text('English', style: hintStyle),
-                  onTap: () {},
-                ),
-                CupertinoListTile(
-                  title: Text('Font Size', style: titleStyle),
-                  additionalInfo:
-                      Text(_fontSize.toStringAsFixed(0), style: hintStyle),
-                  subtitle: CupertinoSlider(
-                    value: _fontSize,
-                    min: 12,
-                    max: 24,
-                    onChanged: (value) {
-                      setState(() {
-                        _fontSize = value;
-                        userSettings.setFontSize(value);
-                      });
-                    },
-                  ),
-                ),
                 CupertinoListTile(
                     title: Text('Appearance', style: titleStyle),
                     additionalInfo: CupertinoSlidingSegmentedControl<int>(
@@ -112,9 +68,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       },
                     )),
                 CupertinoListTile(
-                  title: Text('About', style: titleStyle),
-                  trailing: const CupertinoListTileChevron(),
+                  title: Text('Language', style: titleStyle),
+                  additionalInfo: Text('English', style: hintStyle),
                   onTap: () {},
+                ),
+                const SizedBox(height: 16),
+                CupertinoListTile(
+                  title: Text('Font Size', style: titleStyle),
+                  additionalInfo:
+                      Text(_fontSize.toStringAsFixed(0), style: hintStyle),
+                  subtitle: CupertinoSlider(
+                    thumbColor: AppTheme.primaryColor(context),
+                    value: _fontSize,
+                    min: 12,
+                    max: 24,
+                    onChanged: (value) {
+                      setState(() {
+                        _fontSize = value;
+                        userSettings.setFontSize(value);
+                      });
+                    },
+                  ),
+                ),
+                CupertinoListTile(
+                  title: Text('About', style: titleStyle),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      CupertinoPageRoute(
+                        builder: (context) => const AboutScreen(),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
