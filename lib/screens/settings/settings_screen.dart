@@ -4,6 +4,7 @@ import 'package:unitedwoship/infrastructure/service_locator.dart';
 import 'package:unitedwoship/infrastructure/user_settings.dart';
 import 'package:unitedwoship/app_state_manager.dart';
 import 'package:unitedwoship/screens/about/about_screen.dart';
+import 'package:unitedwoship/screens/settings/settings_manager.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -17,6 +18,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   int _selectedTheme = 0; // 0 for light, 1 for dark
 
   final userSettings = getIt<UserSettings>();
+  final settingsManager = SettingsManager();
 
   @override
   void initState() {
@@ -85,7 +87,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     onChanged: (value) {
                       setState(() {
                         _fontSize = value;
-                        userSettings.setFontSize(value);
+                        settingsManager.dragFontSize(value);
                       });
                     },
                   ),
