@@ -5,10 +5,12 @@ class UserSettings {
   late final SharedPreferences prefs;
 
   final ValueNotifier<bool> isDarkMode = ValueNotifier<bool>(false);
+  final ValueNotifier<double> fontSize = ValueNotifier<double>(17.0);
 
   Future<void> init() async {
     prefs = await SharedPreferences.getInstance();
     isDarkMode.value = getDarkMode();
+    fontSize.value = _getFontSizeFromPrefs();
   }
 
   static const _isDarkModeKey = "isDarkMode";
@@ -26,9 +28,14 @@ class UserSettings {
 
   Future<void> setFontSize(double fontSize) async {
     await prefs.setDouble(_fontSizeKey, fontSize);
+    this.fontSize.value = fontSize;
   }
 
   double getFontSize() {
+    return fontSize.value;
+  }
+
+  double _getFontSizeFromPrefs() {
     return prefs.getDouble(_fontSizeKey) ?? 17.0;
   }
 }
