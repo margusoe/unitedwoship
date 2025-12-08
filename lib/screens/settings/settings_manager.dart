@@ -12,4 +12,8 @@ class SettingsManager {
   void dragFontSize(double value) {
     appstatemanager.setFontSize(value);
   }
+
+  void setUserName(String name) {
+    getIt<UserSettings>().setUserName(name);
+  }
 }

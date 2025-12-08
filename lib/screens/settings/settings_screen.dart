@@ -31,8 +31,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     final titleStyle = AppTheme.titleStyle(context);
     final hintStyle = AppTheme.hintStyle(context);
-    final surfaceColor = AppTheme.surfaceColor(context);
-    final secondaryTextColor = AppTheme.secondaryColor(context);
 
     return CupertinoPageScaffold(
       backgroundColor: AppTheme.backgroundColor(context),
@@ -42,9 +40,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: Column(
               children: [
                 const SizedBox(height: 60),
-                Text(
-                  'Ethan Clark',
-                  style: titleStyle.copyWith(fontSize: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ValueListenableBuilder<String>(
+                      valueListenable: userSettings.userName,
+                      builder: (context, name, child) {
+                        return Text(
+                          name,
+                          style: titleStyle.copyWith(fontSize: 24),
+                        );
+                      },
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 32),
               ],
@@ -53,6 +61,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
           SliverList(
             delegate: SliverChildListDelegate(
               [
+                CupertinoListTile(
+                  title: Text('Name', style: titleStyle),
+                  additionalInfo: Icon(CupertinoIcons.pencil),
+                  onTap: () => _showEditNameDialog(context),
+                ),
                 CupertinoListTile(
                     title: Text('Appearance', style: titleStyle),
                     additionalInfo: CupertinoSlidingSegmentedControl<int>(
@@ -107,6 +120,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  void _showEditNameDialog(BuildContext context) {
+    final TextEditingController textController =
+        TextEditingController(text: userSettings.getUserName());
+    showCupertinoDialog(
+      context: context,
+      builder: (context) {
+        return CupertinoAlertDialog(
+          title: const Text('Enter your name'),
+          content: CupertinoTextField(
+            controller: textController,
+          ),
+          actions: [
+            CupertinoDialogAction(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            CupertinoDialogAction(
+              isDefaultAction: true,
+              child: const Text('Save'),
+              onPressed: () {
+                settingsManager.setUserName(textController.text);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
