@@ -52,10 +52,10 @@ class SongDatabase {
 
   // Handle schema changes if users have the old app version
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    if (oldVersion < 2) {
-      await db.execute("DROP TABLE IF EXISTS $tableLyrics");
-      await _createDB(db, newVersion);
-    }
+    // if (oldVersion < 2) {
+    await db.execute("DROP TABLE IF EXISTS $tableLyrics");
+    await _createDB(db, newVersion);
+    // }
   }
 
   // --- Actions ---

@@ -41,12 +41,21 @@ class Song {
       }
     }
 
+    // Helper to remove XML entities
+    String cleanString(String? input) {
+      if (input == null) return '';
+      // Replaces "&amp;" with "&".
+      // If your chords use "&" as a Flat symbol, change the second argument to "b"
+      // e.g. input.replaceAll('&amp;', 'b');
+      return input.replaceAll('&amp;', 'b');
+    }
+
     return Song(
       id: json['i'] ?? 0,
-      title: json['8'] ?? '',
-      songkey: json['k'] ?? '',
-      songxml: json['x'] ?? '',
-      author: author,
+      title: cleanString(json['8']),
+      songkey: cleanString(json['k']),
+      songxml: cleanString(json['x']),
+      author: cleanString(author),
       youtubeLink: youtubeLink,
     );
   }
@@ -75,5 +84,10 @@ class Song {
       'author': author,
       'youtube_link': youtubeLink,
     };
+  }
+
+  @override
+  String toString() {
+    return 'Song(id: $id, title: $title, songkey: $songkey, author: $author, youtubeLink: $youtubeLink, songxml: $songxml)';
   }
 }

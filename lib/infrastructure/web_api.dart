@@ -37,6 +37,9 @@ class WebApi {
 
     // 3. Load from DB into Memory
     songs = await db.getAllSongs();
+    print(songs.where((song) {
+      return song.title.startsWith("Praise");
+    }).first);
     print("Loaded ${songs.length} songs from database.");
   }
 }
