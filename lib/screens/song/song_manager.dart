@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:unitedwoship/infrastructure/in_app_storage.dart';
 import 'package:unitedwoship/infrastructure/service_locator.dart';
-import 'package:unitedwoship/infrastructure/user_settings.dart';
+import 'package:unitedwoship/infrastructure/song.dart';
+import 'package:unitedwoship/infrastructure/song_database.dart';
 
 class SongManager {
-  final lyricsNotifier = ValueNotifier<SongModel?>(null);
+  final lyricsNotifier = ValueNotifier<Song?>(null);
   final db = getIt<SongDatabase>();
 
   Future<void> init(int songId) async {

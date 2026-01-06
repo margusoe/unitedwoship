@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:unitedwoship/infrastructure/in_app_storage.dart';
 import 'package:unitedwoship/infrastructure/service_locator.dart';
+import 'package:unitedwoship/infrastructure/song.dart';
+import 'package:unitedwoship/infrastructure/song_database.dart';
 
 class HomeManager {
   final SongDatabase _lyricsDatabase = getIt<SongDatabase>();
-  final songListNotifier = ValueNotifier<List<(int, String)>>([]);
+  final songListNotifier = ValueNotifier<List<Song>>([]);
+
   Future<void> init() async {
     final songs = await _lyricsDatabase.getAllSongs();
     songListNotifier.value = songs;
