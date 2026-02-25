@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'service_locator.dart';
 import 'song_database.dart';
@@ -21,7 +22,7 @@ class WebApi {
 
     // 2. Check if empty
     if (await db.isDbEmpty()) {
-      print("Database empty. Loading from Assets...");
+      debugPrint("Database empty. Loading from Assets...");
 
       final String jsonString = await rootBundle.loadString('assets/dbmn.json');
       final Map<String, dynamic> parsedJson = json.decode(jsonString);
@@ -37,9 +38,9 @@ class WebApi {
 
     // 3. Load from DB into Memory
     songs = await db.getAllSongs();
-    print(songs.where((song) {
+    debugPrint(songs.where((song) {
       return song.title.startsWith("Praise");
-    }).first);
-    print("Loaded ${songs.length} songs from database.");
+    }).first.toString());
+    debugPrint("Loaded ${songs.length} songs from database.");
   }
 }
