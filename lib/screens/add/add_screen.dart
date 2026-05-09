@@ -1,5 +1,6 @@
+// lib/screens/add/add_screen.dart
 import 'package:flutter/cupertino.dart';
-import 'package:unitedwoship/app_state_manager.dart';
+import 'package:pocketbase/pocketbase.dart';
 import 'package:unitedwoship/app_theme.dart';
 import 'package:unitedwoship/infrastructure/pocketbase_service.dart';
 import 'package:unitedwoship/infrastructure/service_locator.dart';
@@ -13,15 +14,13 @@ class AddScreen extends StatefulWidget {
 }
 
 class _AddScreenState extends State<AddScreen> {
-  final _formKey = GlobalKey<FormState>();
   final _songTitleController = TextEditingController();
   final _lyricsController = TextEditingController();
   final _authorController = TextEditingController();
   final _melodyAuthorController = TextEditingController();
   final _youtubeLinkController = TextEditingController();
-  // AppStateManager is still needed to provide the theme for the root CupertinoApp
-  // and for any direct state management, but theme properties are accessed via context.
-  final appstatemanager = getIt<AppStateManager>();
+
+  bool _isLoading = false; // Added loading state
 
   @override
   void dispose() {
@@ -33,12 +32,90 @@ class _AddScreenState extends State<AddScreen> {
     super.dispose();
   }
 
+  void _showDialog(String title, String message) {
+    showCupertinoDialog(
+      context: context,
+      builder: (ctx) => CupertinoAlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          CupertinoDialogAction(
+            child: const Text('OK'),
+            onPressed: () => Navigator.pop(ctx),
+          )
+        ],
+      ),
+    );
+  }
+
+  Future<void> _submit() async {
+    final title = _songTitleController.text.trim();
+    final lyrics = _lyricsController.text.trim();
+    final author = _authorController.text.trim();
+
+    // 1. Validation
+    if (title.isEmpty) {
+      _showDialog('Validation Error', 'Song title cannot be empty.');
+      return;
+    }
+
+    if (lyrics.isEmpty) {
+      _showDialog('Validation Error', 'Please enter some lyrics.');
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      final pb = getIt<PocketBaseService>().pb;
+
+      // 2. Format Authors list properly
+      List<String> authors = [];
+      if (author.isNotEmpty) authors.add(author);
+      if (_melodyAuthorController.text.trim().isNotEmpty) {
+        authors.add(_melodyAuthorController.text.trim());
+      }
+
+      // 3. Send to PocketBase
+      await pb.collection('songs').create(body: {
+        'title': title,
+        'lyrics': lyrics,
+        'authors': authors,
+        'original_key': 'C', // Default, could be expanded to a dropdown later
+        'tempo_bpm': 120,
+        'time_signature': '4/4',
+        'media_link': _youtubeLinkController.text.trim(),
+        'approval_status': 'approved',
+        'themes': [],
+      });
+
+      // 4. Force a sync to bring the new song into the local SQLite DB immediately
+      await getIt<SyncManager>().syncSongs();
+
+      if (!mounted) return;
+
+      // 5. Success feedback and clear form
+      _songTitleController.clear();
+      _lyricsController.clear();
+      _authorController.clear();
+      _melodyAuthorController.clear();
+      _youtubeLinkController.clear();
+
+      _showDialog('Success', 'Song added successfully!');
+    } on ClientException catch (e) {
+      debugPrint('PB Error: ${e.response}');
+      _showDialog(
+          'Error', 'Failed to connect to the server. Please try again.');
+    } catch (e) {
+      debugPrint('Error: $e');
+      _showDialog('Error', 'An unexpected error occurred.');
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    // We no longer need isDarkMode here to pick styles, as AppTheme methods handle it.
-    // final isDarkMode = getIt<UserSettings>().getDarkMode(); // No longer directly used for styling
-    // final theme = appstatemanager.theme; // This is the full CupertinoThemeData for the app.
-
     return CupertinoPageScaffold(
       navigationBar: const CupertinoNavigationBar(
         middle: Text('Add Song'),
@@ -47,140 +124,89 @@ class _AddScreenState extends State<AddScreen> {
         child: Column(
           children: [
             Expanded(
-              child: Form(
-                key: _formKey,
-                child: ListView(
-                  padding: const EdgeInsets.all(16.0),
-                  children: [
-                    Text(
-                      'Song Title',
-                      style: AppTheme.titleStyle(context), // <--- Refactored
-                    ),
-                    const SizedBox(height: 8),
-                    CupertinoTextField(
-                      controller: _songTitleController,
-                      placeholder: 'Enter song title',
-                      style: AppTheme.bodyStyle(context), // <--- Refactored
-                      placeholderStyle:
-                          AppTheme.hintStyle(context), // <--- Refactored
-                      decoration: AppTheme.textFieldDecoration(
-                          context), // <--- Refactored
-                      padding: const EdgeInsets.all(12.0),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Lyrics',
-                      style: AppTheme.titleStyle(context), // <--- Refactored
-                    ),
-                    const SizedBox(height: 8),
-                    CupertinoTextField(
-                      controller: _lyricsController,
-                      placeholder: 'Enter lyrics \n\n\n\n',
-                      minLines: 5,
-                      maxLines: null,
-                      style: AppTheme.bodyStyle(context), // <--- Refactored
-                      placeholderStyle:
-                          AppTheme.hintStyle(context), // <--- Refactored
-                      decoration: AppTheme.textFieldDecoration(
-                          context), // <--- Refactored
-                      padding: const EdgeInsets.all(12.0),
-                      textAlignVertical: TextAlignVertical.top,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Author',
-                      style: AppTheme.titleStyle(context), // <--- Refactored
-                    ),
-                    const SizedBox(height: 8),
-                    CupertinoTextField(
-                      controller: _authorController,
-                      placeholder: 'Enter author',
-                      style: AppTheme.bodyStyle(context), // <--- Refactored
-                      placeholderStyle:
-                          AppTheme.hintStyle(context), // <--- Refactored
-                      decoration: AppTheme.textFieldDecoration(
-                          context), // <--- Refactored
-                      padding: const EdgeInsets.all(12.0),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Melody Author',
-                      style: AppTheme.titleStyle(context), // <--- Refactored
-                    ),
-                    const SizedBox(height: 8),
-                    CupertinoTextField(
-                      controller: _melodyAuthorController,
-                      placeholder: 'Enter melody author',
-                      style: AppTheme.bodyStyle(context), // <--- Refactored
-                      placeholderStyle:
-                          AppTheme.hintStyle(context), // <--- Refactored
-                      decoration: AppTheme.textFieldDecoration(
-                          context), // <--- Refactored
-                      padding: const EdgeInsets.all(12.0),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'YouTube Link',
-                      style: AppTheme.titleStyle(context), // <--- Refactored
-                    ),
-                    const SizedBox(height: 8),
-                    CupertinoTextField(
-                      controller: _youtubeLinkController,
-                      placeholder: 'Enter YouTube link',
-                      style: AppTheme.bodyStyle(context), // <--- Refactored
-                      placeholderStyle:
-                          AppTheme.hintStyle(context), // <--- Refactored
-                      decoration: AppTheme.textFieldDecoration(
-                          context), // <--- Refactored
-                      padding: const EdgeInsets.all(12.0),
-                    ),
-                  ],
-                ),
+              child: ListView(
+                padding: const EdgeInsets.all(16.0),
+                children: [
+                  Text('Song Title *', style: AppTheme.titleStyle(context)),
+                  const SizedBox(height: 8),
+                  CupertinoTextField(
+                    controller: _songTitleController,
+                    placeholder: 'Enter song title',
+                    style: AppTheme.bodyStyle(context),
+                    placeholderStyle: AppTheme.hintStyle(context),
+                    decoration: AppTheme.textFieldDecoration(context),
+                    padding: const EdgeInsets.all(12.0),
+                  ),
+                  const SizedBox(height: 16),
+                  Text('Lyrics *', style: AppTheme.titleStyle(context)),
+                  const SizedBox(height: 8),
+                  CupertinoTextField(
+                    controller: _lyricsController,
+                    placeholder:
+                        '[Verse]\nEnter lyrics here...\n\n[Chorus]\n...',
+                    minLines: 8,
+                    maxLines: null,
+                    style: AppTheme.bodyStyle(context),
+                    placeholderStyle: AppTheme.hintStyle(context),
+                    decoration: AppTheme.textFieldDecoration(context),
+                    padding: const EdgeInsets.all(12.0),
+                    textAlignVertical: TextAlignVertical.top,
+                  ),
+                  const SizedBox(height: 16),
+                  Text('Author', style: AppTheme.titleStyle(context)),
+                  const SizedBox(height: 8),
+                  CupertinoTextField(
+                    controller: _authorController,
+                    placeholder: 'Enter author',
+                    style: AppTheme.bodyStyle(context),
+                    placeholderStyle: AppTheme.hintStyle(context),
+                    decoration: AppTheme.textFieldDecoration(context),
+                    padding: const EdgeInsets.all(12.0),
+                  ),
+                  const SizedBox(height: 16),
+                  Text('Melody Author', style: AppTheme.titleStyle(context)),
+                  const SizedBox(height: 8),
+                  CupertinoTextField(
+                    controller: _melodyAuthorController,
+                    placeholder: 'Enter melody author',
+                    style: AppTheme.bodyStyle(context),
+                    placeholderStyle: AppTheme.hintStyle(context),
+                    decoration: AppTheme.textFieldDecoration(context),
+                    padding: const EdgeInsets.all(12.0),
+                  ),
+                  const SizedBox(height: 16),
+                  Text('YouTube Link', style: AppTheme.titleStyle(context)),
+                  const SizedBox(height: 8),
+                  CupertinoTextField(
+                    controller: _youtubeLinkController,
+                    placeholder: 'Enter YouTube or Media link',
+                    style: AppTheme.bodyStyle(context),
+                    placeholderStyle: AppTheme.hintStyle(context),
+                    decoration: AppTheme.textFieldDecoration(context),
+                    padding: const EdgeInsets.all(12.0),
+                  ),
+                ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 16.0),
+              padding: const EdgeInsets.all(16.0),
               child: SizedBox(
                 width: double.infinity,
-                height: 40,
+                height: 48,
                 child: CupertinoButton(
                   padding: EdgeInsets.zero,
-                  color: AppTheme.primaryColor(context), // <--- Refactored
-                  borderRadius: BorderRadius.circular(4),
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(
-                      'Submit',
-                      style: TextStyle(
-                          color: AppTheme.onPrimaryColor(
-                              context), // <--- Refactored
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  // ... inside _submit method ...
-                  onPressed: () async {
-                    final pb = getIt<PocketBaseService>().pb;
-
-                    await pb.collection('songs').create(body: {
-                      'title': _songTitleController.text,
-                      'lyrics': _lyricsController.text,
-                      'authors': [_authorController.text],
-                      'original_key': 'C', // Default
-                      'tempo_bpm': 120,
-                      'time_signature': '4/4',
-                      'approval_status': 'approved',
-                      'themes': [],
-                    });
-
-                    // Trigger a sync immediately to pull the new song into local DB
-                    await getIt<SyncManager>().syncSongs();
-
-                    if (!mounted) return;
-                    Navigator.pop(context);
-                  },
+                  color: AppTheme.primaryColor(context),
+                  borderRadius: BorderRadius.circular(8),
+                  onPressed: _isLoading ? null : _submit, // Disable if loading
+                  child: _isLoading
+                      ? const CupertinoActivityIndicator()
+                      : Text(
+                          'Submit Song',
+                          style: TextStyle(
+                              color: AppTheme.onPrimaryColor(context),
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600),
+                        ),
                 ),
               ),
             ),
