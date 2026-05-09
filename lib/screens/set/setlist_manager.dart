@@ -3,6 +3,8 @@ import 'package:pocketbase/pocketbase.dart';
 import 'package:unitedwoship/infrastructure/pocketbase_service.dart';
 import 'package:unitedwoship/infrastructure/service_locator.dart';
 import 'package:unitedwoship/infrastructure/setlist_models.dart';
+import 'package:unitedwoship/infrastructure/song_database.dart';
+import 'package:unitedwoship/infrastructure/sync_manager.dart';
 
 class SetlistManager extends ChangeNotifier {
   final pb = getIt<PocketBaseService>().pb;
@@ -10,26 +12,27 @@ class SetlistManager extends ChangeNotifier {
   List<Setlist> setlists = [];
   bool isLoading = false;
 
-  String get currentUserId => pb.authStore.model?.id ?? "";
+  String get currentUserId => pb.authStore.record?.id ?? "";
 
   Future<void> fetchSetlists() async {
     isLoading = true;
     notifyListeners();
 
     try {
-      // Fetch setlists where the user is EITHER the owner OR a subscriber
-      final records = await pb.collection('setlists').getFullList(
-            filter:
-                'owner = "$currentUserId" || subscribers ~ "$currentUserId"',
-            sort: '-scheduled_date',
-          );
-      setlists = records.map((r) => Setlist.fromRecord(r)).toList();
+      // READ LOCALLY INSTEAD OF THE INTERNET!
+      setlists = await getIt<SongDatabase>().getAllSetlists();
     } catch (e) {
-      debugPrint("Failed fetching setlists: $e");
+      debugPrint("Failed fetching local setlists: $e");
     } finally {
       isLoading = false;
       notifyListeners();
     }
+  }
+
+  // --- NEW: Trigger a background sync ---
+  Future<void> syncAndFetch() async {
+    await getIt<SyncManager>().syncSetlists();
+    await syncAndFetch();
   }
 
   Future<void> createSetlist(String title, DateTime date) async {
@@ -39,7 +42,7 @@ class SetlistManager extends ChangeNotifier {
         'scheduled_date': date.toUtc().toIso8601String(),
         'owner': currentUserId, // Set the creator as the owner
       });
-      await fetchSetlists();
+      await syncAndFetch();
     } catch (e) {
       debugPrint("Create Setlist Error: $e");
       rethrow;
@@ -52,7 +55,7 @@ class SetlistManager extends ChangeNotifier {
         'title': title,
         'scheduled_date': date.toUtc().toIso8601String(),
       });
-      await fetchSetlists();
+      await syncAndFetch();
     } catch (e) {
       debugPrint("Update Setlist Error: $e");
       rethrow;
@@ -62,7 +65,7 @@ class SetlistManager extends ChangeNotifier {
   Future<void> deleteSetlist(String id) async {
     try {
       await pb.collection('setlists').delete(id);
-      await fetchSetlists();
+      await syncAndFetch();
     } catch (e) {
       debugPrint("Delete Setlist Error: $e");
       rethrow;
@@ -87,7 +90,7 @@ class SetlistManager extends ChangeNotifier {
         });
       }
 
-      await fetchSetlists(); // Refresh list to show the joined setlist
+      await syncAndFetch(); // Refresh list to show the joined setlist
     } catch (e) {
       debugPrint("Join Setlist Error: $e");
       throw Exception("Invalid Setlist Code or it has been deleted.");

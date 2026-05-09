@@ -1,13 +1,17 @@
-// lib/infrastructure/song_database.dart
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:unitedwoship/infrastructure/setlist_models.dart'; // Add this import
 import 'song.dart';
 
 class SongDatabase {
   Database? _database;
 
   static const String _dbName = 'lyrics.db';
+
+  // Table Names
   static const String tableLyrics = 'lyrics';
+  static const String tableSetlists = 'setlists';
+  static const String tableSetlistItems = 'setlist_items';
 
   static const String columnId = 'id';
   static const String columnTitle = 'title';
@@ -20,7 +24,7 @@ class SongDatabase {
   static const String columnThemes = 'themes';
   static const String columnApprovalStatus = 'approval_status';
   static const String columnUpdated = 'updated';
-  static const String columnIsFavorite = 'is_favorite'; // Added
+  static const String columnIsFavorite = 'is_favorite';
 
   Future<Database> get database async {
     if (_database != null) return _database!;
@@ -33,13 +37,14 @@ class SongDatabase {
     var path = join(databasesPath, _dbName);
     _database = await openDatabase(
       path,
-      version: 4, // Bumped for is_favorite column
+      version: 5, // BUMPED TO 5 for setlists
       onCreate: _createDB,
       onUpgrade: _onUpgrade,
     );
   }
 
   Future<void> _createDB(Database db, int version) async {
+    // 1. Create Songs Table
     await db.execute('''
       CREATE TABLE $tableLyrics (
         $columnId TEXT PRIMARY KEY,
@@ -56,21 +61,49 @@ class SongDatabase {
         $columnIsFavorite INTEGER DEFAULT 0
       )
     ''');
+
+    // 2. Create Setlists Table
+    await db.execute('''
+      CREATE TABLE $tableSetlists (
+        id TEXT PRIMARY KEY,
+        title TEXT NOT NULL,
+        scheduled_date TEXT NOT NULL,
+        live_current_item_id TEXT,
+        owner TEXT NOT NULL
+      )
+    ''');
+
+    // 3. Create Setlist Items Table
+    await db.execute('''
+      CREATE TABLE $tableSetlistItems (
+        id TEXT PRIMARY KEY,
+        setlist_id TEXT NOT NULL,
+        song_id TEXT NOT NULL,
+        selected_key TEXT NOT NULL,
+        capo INTEGER NOT NULL,
+        sort_order INTEGER NOT NULL,
+        FOREIGN KEY (setlist_id) REFERENCES $tableSetlists (id) ON DELETE CASCADE
+      )
+    ''');
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    if (oldVersion < 4) {
-      try {
-        await db.execute(
-            "ALTER TABLE $tableLyrics ADD COLUMN $columnIsFavorite INTEGER DEFAULT 0");
-      } catch (_) {
-        await db.execute("DROP TABLE IF EXISTS $tableLyrics");
-        await _createDB(db, newVersion);
-      }
-    } else {
+    if (oldVersion < 5) {
+      // If upgrading from older versions, just drop and recreate for safety
+      // (in a production app with thousands of users, we'd do a safe migration,
+      // but for this stage of development, dropping is fine)
+      await db.execute("DROP TABLE IF EXISTS $tableSetlistItems");
+      await db.execute("DROP TABLE IF EXISTS $tableSetlists");
       await db.execute("DROP TABLE IF EXISTS $tableLyrics");
       await _createDB(db, newVersion);
     }
+  }
+
+  Future<void> clearAll() async {
+    final db = await database;
+    await db.delete(tableSetlistItems);
+    await db.delete(tableSetlists);
+    await db.delete(tableLyrics);
   }
 
   // Bulk Insert (Preserves existing favorites)
@@ -173,11 +206,55 @@ class SongDatabase {
     );
   }
 
-  // Add this inside SongDatabase class
-  Future<void> clearAll() async {
+  // --- NEW: SETLIST METHODS ---
+
+  Future<void> insertSetlistsBatch(List<Setlist> setlists) async {
+    final db = await database;
+    await db.transaction((txn) async {
+      final batch = txn.batch();
+      for (var s in setlists) {
+        batch.insert(tableSetlists, s.toDbMap(),
+            conflictAlgorithm: ConflictAlgorithm.replace);
+      }
+      await batch.commit(noResult: true);
+    });
+  }
+
+  Future<void> insertSetlistItemsBatch(List<SetlistItem> items) async {
+    final db = await database;
+    await db.transaction((txn) async {
+      final batch = txn.batch();
+      for (var item in items) {
+        batch.insert(tableSetlistItems, item.toDbMap(),
+            conflictAlgorithm: ConflictAlgorithm.replace);
+      }
+      await batch.commit(noResult: true);
+    });
+  }
+
+  Future<List<Setlist>> getAllSetlists() async {
+    final db = await database;
+    final result =
+        await db.query(tableSetlists, orderBy: 'scheduled_date DESC');
+    return result.map((map) => Setlist.fromDb(map)).toList();
+  }
+
+  Future<List<SetlistItem>> getSetlistItems(String setlistId) async {
+    final db = await database;
+    final result = await db.query(
+      tableSetlistItems,
+      where: 'setlist_id = ?',
+      whereArgs: [setlistId],
+      orderBy: 'sort_order ASC',
+    );
+    return result.map((map) => SetlistItem.fromDb(map)).toList();
+  }
+
+  Future<void> deleteLocalSetlist(String id) async {
     final db = await database;
     await db
-        .delete(tableLyrics); // Deletes all rows, keeping the table structure
+        .delete(tableSetlistItems, where: 'setlist_id = ?', whereArgs: [id]);
+    await db.delete(tableSetlists, where: 'id = ?', whereArgs: [id]);
   }
 
   Future<void> close() async {

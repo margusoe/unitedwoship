@@ -1,16 +1,16 @@
 // lib/screens/song/song_screen.dart
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_chord/flutter_chord.dart';
-import 'package:pocketbase/pocketbase.dart';
 import 'package:unitedwoship/infrastructure/service_locator.dart';
 import 'package:unitedwoship/infrastructure/song_database.dart';
 import 'package:unitedwoship/infrastructure/user_settings.dart';
 import 'package:unitedwoship/screens/home/home_manager.dart';
 import 'package:unitedwoship/screens/song/song_manager.dart';
+import 'package:unitedwoship/infrastructure/setlist_models.dart'; // <-- Add this
 
 class SongScreen extends StatefulWidget {
   final String? songId;
-  final List<RecordModel>? items;
+  final List<SetlistItem>? items; // <-- Changed from RecordModel to SetlistItem
   final int initialIndex;
 
   const SongScreen({
@@ -39,7 +39,7 @@ class _SongScreenState extends State<SongScreen> {
     // Determine the initial song ID based on single mode or setlist mode
     String? initialId = widget.songId;
     if (widget.items != null && widget.items!.isNotEmpty) {
-      initialId = widget.items![widget.initialIndex].getStringValue('song_id');
+      initialId = widget.items![widget.initialIndex].songId; // <-- Changed
     }
 
     _currentSongId = ValueNotifier<String?>(initialId);
@@ -110,15 +110,15 @@ class _SongScreenState extends State<SongScreen> {
               itemCount: widget.items!.length,
               onPageChanged: (index) {
                 _currentSongId.value =
-                    widget.items![index].getStringValue('song_id');
+                    widget.items![index].songId; // <-- Changed
                 _checkFavorite(); // Recheck favorite status on swipe
               },
               itemBuilder: (context, index) {
                 final item = widget.items![index];
                 return _SongView(
-                  songId: item.getStringValue('song_id'),
-                  keyOverride: item.getStringValue('selected_key'),
-                  capoOverride: item.getIntValue('capo'),
+                  songId: item.songId, // <-- Changed
+                  keyOverride: item.selectedKey, // <-- Changed
+                  capoOverride: item.capo, // <-- Changed
                 );
               },
             )
