@@ -81,6 +81,66 @@ class _SetScreenState extends State<SetScreen> {
     );
   }
 
+  void _showJoinDialog() {
+    final codeController = TextEditingController();
+    showCupertinoDialog(
+      context: context,
+      builder: (context) {
+        return CupertinoAlertDialog(
+          title: const Text('Join Setlist'),
+          content: Column(
+            children: [
+              const SizedBox(height: 8),
+              const Text('Enter the Setlist Code shared by the leader.'),
+              const SizedBox(height: 12),
+              CupertinoTextField(
+                controller: codeController,
+                placeholder: 'Paste Code Here',
+              ),
+            ],
+          ),
+          actions: [
+            CupertinoDialogAction(
+              child: const Text('Cancel'),
+              onPressed: () => Navigator.pop(context),
+            ),
+            CupertinoDialogAction(
+              isDefaultAction: true,
+              onPressed: () async {
+                final code = codeController.text.trim();
+                if (code.isEmpty) return;
+
+                Navigator.pop(context); // Close dialog
+
+                try {
+                  await setlistManager.joinSetlist(code);
+                } catch (e) {
+                  if (context.mounted) {
+                    showCupertinoDialog(
+                      context: context,
+                      builder: (ctx) => CupertinoAlertDialog(
+                        title: const Text('Error'),
+                        content:
+                            Text(e.toString().replaceAll('Exception: ', '')),
+                        actions: [
+                          CupertinoDialogAction(
+                            child: const Text('OK'),
+                            onPressed: () => Navigator.pop(ctx),
+                          )
+                        ],
+                      ),
+                    );
+                  }
+                }
+              },
+              child: const Text('Join'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   // Action Sheet for Edit/Delete
   void _showOptionsSheet(Setlist setlist) {
     showCupertinoModalPopup(
@@ -121,10 +181,21 @@ class _SetScreenState extends State<SetScreen> {
         return CupertinoPageScaffold(
           navigationBar: CupertinoNavigationBar(
             middle: const Text('Setlists'),
-            trailing: CupertinoButton(
-              padding: EdgeInsets.zero,
-              onPressed: () => _showSetlistDialog(),
-              child: const Icon(CupertinoIcons.add),
+            // Replaced the single + icon with a row of two buttons
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CupertinoButton(
+                  padding: EdgeInsets.zero,
+                  onPressed: _showJoinDialog,
+                  child: const Icon(CupertinoIcons.person_add), // Join icon
+                ),
+                CupertinoButton(
+                  padding: EdgeInsets.zero,
+                  onPressed: () => _showSetlistDialog(),
+                  child: const Icon(CupertinoIcons.add), // Create icon
+                ),
+              ],
             ),
           ),
           child: SafeArea(
@@ -157,6 +228,10 @@ class _SetScreenState extends State<SetScreen> {
                                     builder: (context) => SetlistDetailScreen(
                                       setlistId: setlist.id,
                                       setlistTitle: setlist.title,
+                                      // Setlist models need to expose the owner,
+                                      // For now you can just grab it directly if your model supports it:
+                                      ownerId: setlist
+                                          .owner, // <-- We need to add this to Setlist Model!
                                     ),
                                   ),
                                 );
