@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:unitedwoship/app_state_manager.dart';
 import 'package:unitedwoship/app_theme.dart';
+import 'package:unitedwoship/infrastructure/pocketbase_service.dart';
 import 'package:unitedwoship/infrastructure/service_locator.dart';
+import 'package:unitedwoship/infrastructure/sync_manager.dart';
 
 class AddScreen extends StatefulWidget {
   const AddScreen({super.key});
@@ -158,8 +160,26 @@ class _AddScreenState extends State<AddScreen> {
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  onPressed: () {
-                    // TODO: Implement submit functionality
+                  // ... inside _submit method ...
+                  onPressed: () async {
+                    final pb = getIt<PocketBaseService>().pb;
+
+                    await pb.collection('songs').create(body: {
+                      'title': _songTitleController.text,
+                      'lyrics': _lyricsController.text,
+                      'authors': [_authorController.text],
+                      'original_key': 'C', // Default
+                      'tempo_bpm': 120,
+                      'time_signature': '4/4',
+                      'approval_status': 'approved',
+                      'themes': [],
+                    });
+
+                    // Trigger a sync immediately to pull the new song into local DB
+                    await getIt<SyncManager>().syncSongs();
+
+                    if (!mounted) return;
+                    Navigator.pop(context);
                   },
                 ),
               ),

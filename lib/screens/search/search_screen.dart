@@ -4,6 +4,7 @@ import 'package:unitedwoship/app_state_manager.dart';
 import 'package:unitedwoship/infrastructure/service_locator.dart';
 import 'package:unitedwoship/infrastructure/song.dart';
 import 'package:unitedwoship/infrastructure/song_database.dart'; // Replaced web_api
+import 'package:unitedwoship/infrastructure/sync_manager.dart';
 import 'package:unitedwoship/infrastructure/user_settings.dart';
 import 'package:unitedwoship/screens/song/song_screen.dart';
 
@@ -26,8 +27,18 @@ class _SearchScreenState extends State<SearchScreen> {
     _futureSongs = _loadSongs();
   }
 
+  // lib/screens/search/search_screen.dart
+// ... inside _SearchScreenState ...
+
   Future<List<Song>> _loadSongs() async {
-    // Just fetch directly from SQLite
+    // 1. Try to sync in the background
+    try {
+      await getIt<SyncManager>().syncSongs();
+    } catch (e) {
+      debugPrint("Sync failed, staying offline: $e");
+    }
+
+    // 2. Always return local data
     return await db.getAllSongs();
   }
 
