@@ -162,31 +162,51 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void _showEditNameDialog(BuildContext context) {
     final TextEditingController textController =
         TextEditingController(text: userSettings.getUserName());
+
+    // Add a loading state variable
+    bool isSaving = false;
+
     showCupertinoDialog(
       context: context,
-      builder: (context) {
-        return CupertinoAlertDialog(
-          title: const Text('Enter your name'),
-          content: CupertinoTextField(
-            controller: textController,
-          ),
-          actions: [
-            CupertinoDialogAction(
-              child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+      builder: (dialogContext) {
+        return StatefulBuilder(
+            // StatefulBuilder allows us to rebuild just the dialog
+            builder: (context, setState) {
+          return CupertinoAlertDialog(
+            title: const Text('Enter your name'),
+            content: CupertinoTextField(
+              controller: textController,
+              enabled: !isSaving, // Disable input while saving
             ),
-            CupertinoDialogAction(
-              isDefaultAction: true,
-              child: const Text('Save'),
-              onPressed: () {
-                settingsManager.setUserName(textController.text);
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
+            actions: [
+              CupertinoDialogAction(
+                child: const Text('Cancel'),
+                onPressed: isSaving
+                    ? null
+                    : () {
+                        Navigator.of(context).pop();
+                      },
+              ),
+              CupertinoDialogAction(
+                isDefaultAction: true,
+                onPressed: isSaving
+                    ? null
+                    : () async {
+                        setState(() => isSaving = true); // Show loading
+
+                        await settingsManager.setUserName(textController.text);
+
+                        if (context.mounted) {
+                          Navigator.of(context).pop(); // Close when done
+                        }
+                      },
+                child: isSaving
+                    ? const CupertinoActivityIndicator()
+                    : const Text('Save'),
+              ),
+            ],
+          );
+        });
       },
     );
   }

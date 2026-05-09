@@ -1,9 +1,9 @@
-// lib/screens/auth/auth_manager.dart
 import 'package:flutter/cupertino.dart';
 import 'package:unitedwoship/infrastructure/pocketbase_service.dart';
 import 'package:unitedwoship/infrastructure/service_locator.dart';
-import 'package:pocketbase/pocketbase.dart';
 import 'package:unitedwoship/infrastructure/song_database.dart';
+import 'package:unitedwoship/infrastructure/user_settings.dart'; // Add this import
+import 'package:pocketbase/pocketbase.dart';
 
 class AuthManager {
   final PocketBaseService _pbService = getIt<PocketBaseService>();
@@ -12,17 +12,17 @@ class AuthManager {
   final ValueNotifier<bool> isLoading = ValueNotifier<bool>(false);
 
   Future<void> init() async {
-    // Check if the user already has a valid session token saved locally
     isAuthenticated.value = _pbService.pb.authStore.isValid;
+    if (isAuthenticated.value) {
+      _syncNameFromAuthStore(); // Grab name if already logged in
+    }
   }
 
-  /// Logs in an existing user
   Future<void> login(String email, String password) async {
     try {
       isLoading.value = true;
-
       await _pbService.pb.collection('users').authWithPassword(email, password);
-
+      _syncNameFromAuthStore(); // Grab name on new login
       isAuthenticated.value = true;
     } on ClientException catch (e) {
       debugPrint('Login Error: ${e.response}');
@@ -32,41 +32,40 @@ class AuthManager {
     }
   }
 
-  /// Registers a new user and automatically logs them in
-  /// Registers a new user and automatically logs them in
   Future<void> register(String name, String email, String password) async {
     try {
       isLoading.value = true;
-
-      // 1. Create the user in PocketBase
       await _pbService.pb.collection('users').create(body: {
         'name': name,
         'email': email,
         'password': password,
         'passwordConfirm': password,
-        // Add these two fields to satisfy PocketBase requirements:
         'emailVisibility': false,
         'verified': false,
       });
-
-      // 2. Automatically log them in after successful registration
       await login(email, password);
     } on ClientException catch (e) {
       debugPrint('Registration Error: ${e.response}');
-      throw Exception(
-          'Failed to create account. Email might already be in use or password is too short (min 8 chars).');
+      throw Exception('Failed to create account.');
     } finally {
       isLoading.value = false;
     }
   }
 
-  /// Logs the user out
   Future<void> signOut() async {
     _pbService.pb.authStore.clear();
-
-    // Clear local data so the next user has a fresh slate
     await getIt<SongDatabase>().clearAll();
-
     isAuthenticated.value = false;
+  }
+
+  // --- NEW HELPER METHOD ---
+  void _syncNameFromAuthStore() {
+    final model = _pbService.pb.authStore.model as RecordModel?;
+    if (model != null) {
+      final pbName = model.getStringValue('name');
+      if (pbName.isNotEmpty) {
+        getIt<UserSettings>().setUserName(pbName);
+      }
+    }
   }
 }
