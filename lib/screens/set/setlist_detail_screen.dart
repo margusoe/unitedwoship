@@ -118,28 +118,101 @@ class _SetlistDetailScreenState extends State<SetlistDetailScreen> {
     );
   }
 
+  void _showEditKeyCapoDialog(
+      RecordModel item, String currentKey, int currentCapo) {
+    final keyController = TextEditingController(text: currentKey);
+    final capoController = TextEditingController(text: currentCapo.toString());
+
+    showCupertinoDialog(
+      context: context,
+      builder: (context) {
+        return CupertinoAlertDialog(
+          title: const Text('Change Key & Capo'),
+          content: Column(
+            children: [
+              const SizedBox(height: 12),
+              CupertinoTextField(
+                controller: keyController,
+                placeholder: 'Key (e.g. C, Cm, C7b9)',
+                textCapitalization: TextCapitalization
+                    .words, // Auto-capitalizes the first letter
+              ),
+              const SizedBox(height: 12),
+              CupertinoTextField(
+                controller: capoController,
+                placeholder: 'Capo (0 - 12)',
+                keyboardType:
+                    TextInputType.number, // Opens the number pad automatically
+              ),
+            ],
+          ),
+          actions: [
+            CupertinoDialogAction(
+              child: const Text('Cancel'),
+              onPressed: () => Navigator.pop(context),
+            ),
+            CupertinoDialogAction(
+              isDefaultAction: true,
+              onPressed: () async {
+                final newKey = keyController.text.trim();
+                // Ensure Capo is a valid number, default to 0 if they typed letters by mistake
+                final newCapo = int.tryParse(capoController.text.trim()) ?? 0;
+
+                Navigator.pop(context); // Close dialog
+                setState(() => _isLoading = true);
+
+                try {
+                  // Update the item in PocketBase
+                  await pb.collection('setlist_items').update(item.id, body: {
+                    'selected_key': newKey,
+                    'capo': newCapo,
+                  });
+                  // The UI will auto-refresh thanks to our PocketBase subscription!
+                } catch (e) {
+                  debugPrint("Failed to update Key/Capo: $e");
+                  if (mounted) setState(() => _isLoading = false);
+                }
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _showItemOptions(RecordModel item, String songTitle) {
+    // Extract current values safely
+    final currentKey = item.getStringValue('selected_key');
+    final currentCapo = item.getIntValue('capo');
+
     showCupertinoModalPopup(
       context: context,
       builder: (BuildContext context) => CupertinoActionSheet(
         title: Text(songTitle),
         message: const Text('Manage this song in the setlist'),
         actions: <CupertinoActionSheetAction>[
-          // In the future, you can add "Change Key" or "Change Capo" here!
+          // --- NEW EDIT BUTTON ---
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.pop(context); // Close the action sheet
+              _showEditKeyCapoDialog(
+                  item, currentKey, currentCapo); // Open the picker
+            },
+            child: const Text('Change Key / Capo'),
+          ),
+
+          // Existing Delete Button
           CupertinoActionSheetAction(
             isDestructiveAction: true,
             onPressed: () async {
-              Navigator.pop(context); // close sheet
-
+              Navigator.pop(context);
               setState(() => _isLoading = true);
               try {
-                // Delete the item from PocketBase
                 await pb.collection('setlist_items').delete(item.id);
-                // We don't need to call _fetchItems() because our real-time
-                // subscription will automatically detect the delete and refresh the list!
               } catch (e) {
                 debugPrint("Failed to remove song: $e");
-                setState(() => _isLoading = false);
+                if (mounted) setState(() => _isLoading = false);
               }
             },
             child: const Text('Remove from Setlist'),
