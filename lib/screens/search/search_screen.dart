@@ -1,10 +1,7 @@
-// lib/screens/search/search_screen.dart
 import 'package:flutter/cupertino.dart';
-import 'package:unitedwoship/app_state_manager.dart';
 import 'package:unitedwoship/infrastructure/service_locator.dart';
 import 'package:unitedwoship/infrastructure/song.dart';
-import 'package:unitedwoship/infrastructure/song_database.dart'; // Replaced web_api
-import 'package:unitedwoship/infrastructure/sync_manager.dart';
+import 'package:unitedwoship/infrastructure/song_database.dart';
 import 'package:unitedwoship/infrastructure/user_settings.dart';
 import 'package:unitedwoship/screens/song/song_screen.dart';
 
@@ -16,89 +13,60 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  final appstatemanager = getIt<AppStateManager>();
-  final db = getIt<SongDatabase>(); // Get database directly
+  final db = getIt<SongDatabase>();
   final userSettings = getIt<UserSettings>();
   late Future<List<Song>> _futureSongs;
 
   @override
   void initState() {
     super.initState();
-    _futureSongs = _loadSongs();
-  }
-
-  // lib/screens/search/search_screen.dart
-// ... inside _SearchScreenState ...
-
-  Future<List<Song>> _loadSongs() async {
-    // 1. Try to sync in the background
-    try {
-      await getIt<SyncManager>().syncSongs();
-    } catch (e) {
-      debugPrint("Sync failed, staying offline: $e");
-    }
-
-    // 2. Always return local data
-    return await db.getAllSongs();
+    _futureSongs = db.getAllSongs();
   }
 
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(
-        middle: Text('Search'),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
+      navigationBar: const CupertinoNavigationBar(middle: Text('Search')),
+      child: SafeArea(
         child: Column(
           children: [
-            const SizedBox(height: 20),
-            const CupertinoSearchTextField(),
-            const SizedBox(height: 20),
+            const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: CupertinoSearchTextField(),
+            ),
             Expanded(
-              child: ValueListenableBuilder<double>(
-                valueListenable: userSettings.fontSize,
-                builder: (context, fontSize, child) {
-                  return FutureBuilder<List<Song>>(
-                    future: _futureSongs,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(
-                            child: CupertinoActivityIndicator());
-                      } else if (snapshot.hasError) {
-                        return Center(child: Text('Error: ${snapshot.error}'));
-                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return const Center(child: Text('No songs found.'));
-                      } else {
-                        final songs = snapshot.data!;
-                        return ListView.builder(
-                          itemCount: songs.length,
-                          itemBuilder: (context, index) {
-                            final song = songs[index];
-                            return CupertinoListTile(
-                              title: Text(
-                                song.title,
-                                style: TextStyle(fontSize: fontSize),
-                              ),
-                              subtitle: Text(
-                                'Key: ${song.originalKey}', // Updated from songkey
-                                style: TextStyle(fontSize: fontSize * 0.8),
-                              ),
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  CupertinoPageRoute(
-                                    builder: (context) => SongScreen(
-                                      songId: song.id,
-                                      // We leave overrideKey and overrideCapo as null (default)
-                                    ),
+              child: FutureBuilder<List<Song>>(
+                future: _futureSongs,
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData)
+                    return const Center(child: CupertinoActivityIndicator());
+                  final songs = snapshot.data!;
+
+                  return ValueListenableBuilder<double>(
+                    valueListenable: userSettings.fontSize,
+                    builder: (context, fontSize, child) {
+                      return ListView.builder(
+                        itemCount: songs.length,
+                        itemBuilder: (context, index) {
+                          final song = songs[index];
+                          return CupertinoListTile(
+                            title: Text(song.title,
+                                style: TextStyle(fontSize: fontSize)),
+                            subtitle: Text('Key: ${song.originalKey}'),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                CupertinoPageRoute(
+                                  builder: (context) => SongScreen(
+                                    songId:
+                                        song.id, // Ensure song.id is not null
                                   ),
-                                );
-                              },
-                            );
-                          },
-                        );
-                      }
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      );
                     },
                   );
                 },
@@ -107,6 +75,23 @@ class _SearchScreenState extends State<SearchScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+// A simple wrapper to handle "Global Mode"
+class _GlobalSongWrapper extends StatelessWidget {
+  final String songId;
+  const _GlobalSongWrapper({required this.songId});
+
+  @override
+  Widget build(BuildContext context) {
+    // We create a dummy list with one item for the PageView to work
+    return SongScreen(
+      items: null, // Signals it's not a setlist
+      initialIndex: 0,
+      // We need to pass the ID via a custom logic or update SongScreen slightly.
+      // Let's do the simple fix below.
     );
   }
 }
