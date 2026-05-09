@@ -10,6 +10,8 @@ class HomeManager extends ChangeNotifier {
   final SyncManager _syncManager = getIt<SyncManager>();
 
   List<Song> songs = [];
+  List<Song> favoriteSongs = []; // <-- NEW: Hold favorites here
+
   bool isLoading = false;
   bool isSyncing = false;
 
@@ -17,14 +19,19 @@ class HomeManager extends ChangeNotifier {
 
   Future<void> init() async {
     await loadSongs('');
+    await loadFavorites(); // <-- NEW: Load favorites on startup
     await syncWithServer();
   }
 
+  // --- NEW: Load Favorites Method ---
+  Future<void> loadFavorites() async {
+    favoriteSongs = await _db.getFavoriteSongs();
+    notifyListeners();
+  }
+
   Future<void> loadSongs(String query) async {
-    // Cancel the previous timer if the user is still typing
     if (_debounce?.isActive ?? false) _debounce!.cancel();
 
-    // Wait 300ms after the user stops typing before querying
     _debounce = Timer(const Duration(milliseconds: 300), () async {
       isLoading = true;
       notifyListeners();
@@ -46,7 +53,8 @@ class HomeManager extends ChangeNotifier {
 
     try {
       await _syncManager.syncSongs();
-      await loadSongs(''); // Reload from local DB after sync
+      await loadSongs('');
+      await loadFavorites(); // <-- NEW: Reload favorites after sync
     } catch (e) {
       debugPrint("Sync failed: $e");
     } finally {
@@ -58,5 +66,6 @@ class HomeManager extends ChangeNotifier {
   Future<void> deleteSong(String songId) async {
     await _db.deleteSong(songId);
     await loadSongs('');
+    await loadFavorites(); // <-- NEW: Reload favorites if a song is deleted
   }
 }

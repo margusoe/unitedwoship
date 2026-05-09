@@ -5,6 +5,7 @@ import 'package:pocketbase/pocketbase.dart';
 import 'package:unitedwoship/infrastructure/service_locator.dart';
 import 'package:unitedwoship/infrastructure/song_database.dart';
 import 'package:unitedwoship/infrastructure/user_settings.dart';
+import 'package:unitedwoship/screens/home/home_manager.dart';
 import 'package:unitedwoship/screens/song/song_manager.dart';
 
 class SongScreen extends StatefulWidget {
@@ -54,11 +55,20 @@ class _SongScreenState extends State<SongScreen> {
     }
   }
 
+  // Inside _SongScreenState class in lib/screens/song/song_screen.dart
+
   void _toggleFavorite() async {
     if (_currentSongId.value != null) {
       final newValue = !_isFavorite.value;
+
+      // 1. Save to local SQLite database
       await db.toggleFavorite(_currentSongId.value!, newValue);
+
+      // 2. Update the UI in the Song Screen instantly
       _isFavorite.value = newValue;
+
+      // 3. Tell the HomeManager to refresh the global Favorites list!
+      getIt<HomeManager>().loadFavorites();
     }
   }
 
