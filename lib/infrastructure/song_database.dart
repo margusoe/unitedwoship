@@ -173,6 +173,13 @@ class SongDatabase {
     );
   }
 
+  // Add this inside SongDatabase class
+  Future<void> clearAll() async {
+    final db = await database;
+    await db
+        .delete(tableLyrics); // Deletes all rows, keeping the table structure
+  }
+
   Future<void> close() async {
     final db = await database;
     db.close();

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:unitedwoship/infrastructure/service_locator.dart';
 import 'package:unitedwoship/infrastructure/song.dart';
@@ -12,23 +13,31 @@ class HomeManager extends ChangeNotifier {
   bool isLoading = false;
   bool isSyncing = false;
 
+  Timer? _debounce;
+
   Future<void> init() async {
     await loadSongs('');
     await syncWithServer();
   }
 
   Future<void> loadSongs(String query) async {
-    isLoading = true;
-    notifyListeners();
+    // Cancel the previous timer if the user is still typing
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
 
-    if (query.isEmpty) {
-      songs = await _db.getAllSongs();
-    } else {
-      songs = await _db.searchSongs(query);
-    }
+    // Wait 300ms after the user stops typing before querying
+    _debounce = Timer(const Duration(milliseconds: 300), () async {
+      isLoading = true;
+      notifyListeners();
 
-    isLoading = false;
-    notifyListeners();
+      if (query.isEmpty) {
+        songs = await _db.getAllSongs();
+      } else {
+        songs = await _db.searchSongs(query);
+      }
+
+      isLoading = false;
+      notifyListeners();
+    });
   }
 
   Future<void> syncWithServer() async {

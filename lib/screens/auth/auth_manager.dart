@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:unitedwoship/infrastructure/pocketbase_service.dart';
 import 'package:unitedwoship/infrastructure/service_locator.dart';
 import 'package:pocketbase/pocketbase.dart';
+import 'package:unitedwoship/infrastructure/song_database.dart';
 
 class AuthManager {
   final PocketBaseService _pbService = getIt<PocketBaseService>();
@@ -62,6 +63,10 @@ class AuthManager {
   /// Logs the user out
   Future<void> signOut() async {
     _pbService.pb.authStore.clear();
+
+    // Clear local data so the next user has a fresh slate
+    await getIt<SongDatabase>().clearAll();
+
     isAuthenticated.value = false;
   }
 }
