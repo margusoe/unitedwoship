@@ -1,6 +1,7 @@
 // lib/infrastructure/service_locator.dart
 import 'package:get_it/get_it.dart';
 import 'package:unitedwoship/app_state_manager.dart';
+import 'package:unitedwoship/infrastructure/live_mode_manager.dart';
 import 'package:unitedwoship/infrastructure/song_database.dart';
 import 'package:unitedwoship/infrastructure/pocketbase_service.dart';
 import 'package:unitedwoship/infrastructure/sync_manager.dart';
@@ -26,4 +27,5 @@ Future<void> setupServiceLocator() async {
   getIt.registerLazySingleton<AuthManager>(() => AuthManager());
   // lib/infrastructure/service_locator.dart
   getIt.registerLazySingleton<SyncManager>(() => SyncManager());
+  getIt.registerLazySingleton<LiveModeManager>(() => LiveModeManager());
 }
