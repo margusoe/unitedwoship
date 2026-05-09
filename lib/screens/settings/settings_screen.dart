@@ -4,6 +4,7 @@ import 'package:unitedwoship/infrastructure/service_locator.dart';
 import 'package:unitedwoship/infrastructure/user_settings.dart';
 import 'package:unitedwoship/app_state_manager.dart';
 import 'package:unitedwoship/screens/about/about_screen.dart';
+import 'package:unitedwoship/screens/auth/auth_manager.dart';
 import 'package:unitedwoship/screens/settings/settings_manager.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -111,6 +112,41 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     Navigator.of(context).push(
                       CupertinoPageRoute(
                         builder: (context) => const AboutScreen(),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 32), // Add some spacing
+                // --- NEW LOGOUT BUTTON ---
+                CupertinoListTile(
+                  title: Text(
+                    'Log Out',
+                  ),
+                  trailing: const Icon(
+                    CupertinoIcons.square_arrow_right,
+                  ),
+                  onTap: () async {
+                    // Show confirmation dialog before logging out
+                    showCupertinoDialog(
+                      context: context,
+                      builder: (ctx) => CupertinoAlertDialog(
+                        title: const Text('Log Out'),
+                        content: const Text(
+                            'Are you sure you want to log out? Offline data will be cleared.'),
+                        actions: [
+                          CupertinoDialogAction(
+                            child: const Text('Cancel'),
+                            onPressed: () => Navigator.pop(ctx),
+                          ),
+                          CupertinoDialogAction(
+                            isDestructiveAction: true,
+                            onPressed: () {
+                              Navigator.pop(ctx); // Close dialog
+                              getIt<AuthManager>().signOut(); // Trigger logout
+                            },
+                            child: const Text('Log Out'),
+                          ),
+                        ],
                       ),
                     );
                   },
