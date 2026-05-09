@@ -88,8 +88,10 @@ class _SearchScreenState extends State<SearchScreen> {
                                 Navigator.push(
                                   context,
                                   CupertinoPageRoute(
-                                    builder: (context) =>
-                                        SongScreen(songId: song.id),
+                                    builder: (context) => SongScreen(
+                                      songId: song.id,
+                                      // We leave overrideKey and overrideCapo as null (default)
+                                    ),
                                   ),
                                 );
                               },

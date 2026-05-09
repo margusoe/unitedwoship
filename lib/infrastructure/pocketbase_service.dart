@@ -19,4 +19,12 @@ class PocketBaseService {
     pb = PocketBase(baseUrl);
     debugPrint("PocketBase initialized at $baseUrl");
   }
+
+  Future<List<RecordModel>> getSetlistItems(String setlistId) async {
+    return await pb.collection('setlist_items').getFullList(
+          filter: 'setlist_id = "$setlistId"',
+          expand: 'song_id', // This magically gives you the song details!
+          sort: 'sort_order',
+        );
+  }
 }
