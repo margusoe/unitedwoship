@@ -6,14 +6,18 @@ class PocketBaseService {
   late final PocketBase pb;
 
   Future<void> init() async {
-    // For local development:
-    // iOS Simulator uses 127.0.0.1
-    // Android Emulator uses 10.0.2.2
-    // Web uses 127.0.0.1
+    String baseUrl;
 
-    String baseUrl = 'http://127.0.0.1:8090';
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      baseUrl = 'http://10.0.2.2:8090';
+    if (kReleaseMode) {
+      // PRODUCTION URL (DigitalOcean Droplet)
+      baseUrl = 'https://thealtarapi.aofaith.org';
+    } else {
+      // LOCAL DEVELOPMENT URL
+      if (defaultTargetPlatform == TargetPlatform.android) {
+        baseUrl = 'http://10.0.2.2:8090';
+      } else {
+        baseUrl = 'http://127.0.0.1:8090';
+      }
     }
 
     pb = PocketBase(baseUrl);
@@ -23,7 +27,7 @@ class PocketBaseService {
   Future<List<RecordModel>> getSetlistItems(String setlistId) async {
     return await pb.collection('setlist_items').getFullList(
           filter: 'setlist_id = "$setlistId"',
-          expand: 'song_id', // This magically gives you the song details!
+          expand: 'song_id',
           sort: 'sort_order',
         );
   }
