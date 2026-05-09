@@ -8,17 +8,17 @@ class PocketBaseService {
   Future<void> init() async {
     String baseUrl;
 
-    if (kReleaseMode) {
-      // PRODUCTION URL (DigitalOcean Droplet)
-      baseUrl = 'https://thealtarapi.aofaith.org';
-    } else {
-      // LOCAL DEVELOPMENT URL
-      if (defaultTargetPlatform == TargetPlatform.android) {
-        baseUrl = 'http://10.0.2.2:8090';
-      } else {
-        baseUrl = 'http://127.0.0.1:8090';
-      }
-    }
+    // if (kReleaseMode) {
+    // PRODUCTION URL (DigitalOcean Droplet)
+    baseUrl = 'https://thealtarapi.aofaith.org';
+    // } else {
+    //   // LOCAL DEVELOPMENT URL
+    //   if (defaultTargetPlatform == TargetPlatform.android) {
+    //     baseUrl = 'http://10.0.2.2:8090';
+    //   } else {
+    //     baseUrl = 'http://127.0.0.1:8090';
+    //   }
+    // }
 
     pb = PocketBase(baseUrl);
     debugPrint("PocketBase initialized at $baseUrl");

@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_chord/flutter_chord.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:unitedwoship/infrastructure/service_locator.dart';
-import 'package:unitedwoship/infrastructure/song.dart';
 import 'package:unitedwoship/infrastructure/song_database.dart';
 import 'package:unitedwoship/infrastructure/user_settings.dart';
 import 'package:unitedwoship/screens/song/song_manager.dart';
@@ -124,7 +123,7 @@ class _SongScreenState extends State<SongScreen> {
   }
 }
 
-class _SongView extends StatelessWidget {
+class _SongView extends StatefulWidget {
   final String songId;
   final String keyOverride;
   final int capoOverride;
@@ -136,18 +135,37 @@ class _SongView extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final db = getIt<SongDatabase>();
-    final manager = SongManager();
-    final userSettings = getIt<UserSettings>();
+  State<_SongView> createState() => _SongViewState();
+}
 
-    return FutureBuilder<Song?>(
-      future: db.getSong(songId),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
+class _SongViewState extends State<_SongView> {
+  final manager = SongManager();
+  final userSettings = getIt<UserSettings>();
+
+  @override
+  void initState() {
+    super.initState();
+    manager.loadSong(widget.songId);
+  }
+
+  @override
+  void didUpdateWidget(covariant _SongView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.songId != widget.songId) {
+      manager.loadSong(widget.songId);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListenableBuilder(
+      listenable: manager,
+      builder: (context, _) {
+        if (manager.isLoading) {
           return const Center(child: CupertinoActivityIndicator());
         }
-        final song = snapshot.data;
+
+        final song = manager.song;
         if (song == null) return const Center(child: Text("Song not found"));
 
         return SafeArea(
@@ -165,9 +183,9 @@ class _SongView extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     _infoBadge(
-                        "Key: ${keyOverride.isNotEmpty ? keyOverride : song.originalKey}"),
+                        "Key: ${widget.keyOverride.isNotEmpty ? widget.keyOverride : song.originalKey}"),
                     const SizedBox(width: 10),
-                    _infoBadge("Capo: $capoOverride"),
+                    _infoBadge("Capo: ${widget.capoOverride}"),
                   ],
                 ),
               ),

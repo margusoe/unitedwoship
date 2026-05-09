@@ -3,13 +3,30 @@ import 'package:unitedwoship/infrastructure/service_locator.dart';
 import 'package:unitedwoship/infrastructure/song.dart';
 import 'package:unitedwoship/infrastructure/song_database.dart';
 
-class SongManager {
-  final lyricsNotifier = ValueNotifier<Song?>(null);
+class SongManager extends ChangeNotifier {
   final db = getIt<SongDatabase>();
 
-  Future<void> init(String songId) async {
-    final lyrics = await db.getSong(songId);
-    lyricsNotifier.value = lyrics;
+  Song? song;
+  bool isLoading = true;
+  bool isFavorite = false;
+
+  Future<void> loadSong(String songId) async {
+    isLoading = true;
+    notifyListeners();
+
+    song = await db.getSong(songId);
+    isFavorite = song?.isFavorite ?? false;
+
+    isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> toggleFavorite() async {
+    if (song != null) {
+      isFavorite = !isFavorite;
+      await db.toggleFavorite(song!.id, isFavorite);
+      notifyListeners();
+    }
   }
 
   String formatLyrics(String xmlString) {

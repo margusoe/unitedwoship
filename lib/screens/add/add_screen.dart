@@ -4,7 +4,8 @@ import 'package:pocketbase/pocketbase.dart';
 import 'package:unitedwoship/app_theme.dart';
 import 'package:unitedwoship/infrastructure/pocketbase_service.dart';
 import 'package:unitedwoship/infrastructure/service_locator.dart';
-import 'package:unitedwoship/infrastructure/sync_manager.dart';
+import 'package:unitedwoship/infrastructure/song.dart';
+import 'package:unitedwoship/infrastructure/song_database.dart';
 
 class AddScreen extends StatefulWidget {
   const AddScreen({super.key});
@@ -48,17 +49,17 @@ class _AddScreenState extends State<AddScreen> {
     );
   }
 
+  // Inside _AddScreenState
+
   Future<void> _submit() async {
     final title = _songTitleController.text.trim();
     final lyrics = _lyricsController.text.trim();
     final author = _authorController.text.trim();
 
-    // 1. Validation
     if (title.isEmpty) {
       _showDialog('Validation Error', 'Song title cannot be empty.');
       return;
     }
-
     if (lyrics.isEmpty) {
       _showDialog('Validation Error', 'Please enter some lyrics.');
       return;
@@ -68,40 +69,41 @@ class _AddScreenState extends State<AddScreen> {
 
     try {
       final pb = getIt<PocketBaseService>().pb;
+      final db = getIt<SongDatabase>();
 
-      // 2. Format Authors list properly
       List<String> authors = [];
       if (author.isNotEmpty) authors.add(author);
       if (_melodyAuthorController.text.trim().isNotEmpty) {
         authors.add(_melodyAuthorController.text.trim());
       }
 
-      // 3. Send to PocketBase
-      await pb.collection('songs').create(body: {
+      // 1. Send to PocketBase as "pending" (Pending on server)
+      final record = await pb.collection('songs').create(body: {
         'title': title,
         'lyrics': lyrics,
         'authors': authors,
-        'original_key': 'C', // Default, could be expanded to a dropdown later
+        'original_key': 'C',
         'tempo_bpm': 120,
         'time_signature': '4/4',
         'media_link': _youtubeLinkController.text.trim(),
-        'approval_status': 'approved',
+        'approval_status': 'pending', // <--- Set to Pending
         'themes': [],
       });
 
-      // 4. Force a sync to bring the new song into the local SQLite DB immediately
-      await getIt<SyncManager>().syncSongs();
+      // 2. Add to local SQLite DB instantly so it's usable right away
+      final newSong = Song.fromRecord(record);
+      await db.insertBatch([newSong]);
 
       if (!mounted) return;
 
-      // 5. Success feedback and clear form
       _songTitleController.clear();
       _lyricsController.clear();
       _authorController.clear();
       _melodyAuthorController.clear();
       _youtubeLinkController.clear();
 
-      _showDialog('Success', 'Song added successfully!');
+      _showDialog(
+          'Success', 'Song added locally and is pending server approval!');
     } on ClientException catch (e) {
       debugPrint('PB Error: ${e.response}');
       _showDialog(
