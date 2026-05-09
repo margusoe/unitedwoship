@@ -28,28 +28,20 @@ class SetlistManager extends ChangeNotifier {
     }
   }
 
-  Future<void> createSetlist(String title, DateTime date) async {
+  Future<void> createSetlist(String title, DateTime date,
+      {String? teamId}) async {
     try {
-      // 1. Fetch the team(s) this user belongs to.
-      // Thanks to your PocketBase rules, this will automatically only
-      // return teams where the user is a member.
-      final teams = await pb.collection('teams').getFullList();
-
-      if (teams.isEmpty) {
-        // If the user hasn't been assigned to a team yet, we can't make a setlist.
-        throw Exception("You must be assigned to a Team to create a setlist.");
-      }
-
-      // We'll just use the first team they belong to for now
-      final String teamId = teams.first.id;
-
-      // 2. Create the setlist, passing the team_id
-      await pb.collection('setlists').create(body: {
+      final body = <String, dynamic>{
         'title': title,
         'scheduled_date': date.toUtc().toIso8601String(),
-        'team_id': teamId, // <-- Added this!
-      });
+      };
 
+      // Only attach a team if they selected one (for now, it remains personal)
+      if (teamId != null && teamId.isNotEmpty) {
+        body['team_id'] = teamId;
+      }
+
+      await pb.collection('setlists').create(body: body);
       await fetchSetlists(); // Refresh list
     } catch (e) {
       debugPrint("Create Setlist Error: $e");
