@@ -7,13 +7,14 @@ class Song {
   final String title;
   final List<String> authors;
   final String originalKey;
-  final String lyrics; // Replaces songxml
-  final String mediaLink; // Replaces youtubeLink
+  final String lyrics;
+  final String mediaLink;
   final int tempoBpm;
   final String timeSignature;
   final List<String> themes;
   final String approvalStatus;
-  final DateTime updated; // Crucial for offline sync
+  final DateTime updated;
+  final bool isFavorite; // Added for local favorites
 
   Song({
     required this.id,
@@ -27,6 +28,7 @@ class Song {
     required this.themes,
     required this.approvalStatus,
     required this.updated,
+    this.isFavorite = false, // Default to false
   });
 
   // --- 1. Parse from PocketBase Record ---
@@ -34,15 +36,17 @@ class Song {
     return Song(
       id: record.id,
       title: record.getStringValue('title'),
-      authors: _parseStringList(record.getListValue<String>('authors')),
+      authors: _parseStringList(record.getListValue('authors')),
       originalKey: record.getStringValue('original_key'),
       lyrics: record.getStringValue('lyrics'),
       mediaLink: record.getStringValue('media_link'),
       tempoBpm: record.getIntValue('tempo_bpm'),
       timeSignature: record.getStringValue('time_signature'),
-      themes: _parseStringList(record.getListValue<String>('themes')),
+      themes: _parseStringList(record.getListValue('themes')),
       approvalStatus: record.getStringValue('approval_status'),
       updated: DateTime.parse(record.updated).toLocal(),
+      isFavorite:
+          false, // PB doesn't track this natively per user in our schema
     );
   }
 
@@ -60,6 +64,7 @@ class Song {
       themes: List<String>.from(jsonDecode(map['themes'] ?? '[]')),
       approvalStatus: map['approval_status'] ?? 'approved',
       updated: DateTime.parse(map['updated']).toLocal(),
+      isFavorite: (map['is_favorite'] ?? 0) == 1, // Parse int to bool
     );
   }
 
@@ -77,6 +82,7 @@ class Song {
       'themes': jsonEncode(themes),
       'approval_status': approvalStatus,
       'updated': updated.toUtc().toIso8601String(),
+      'is_favorite': isFavorite ? 1 : 0, // Convert bool to int
     };
   }
 
