@@ -16,17 +16,22 @@ dependencies:
   path: ^1.9.0
   flutter_chord: ^0.1.2
   shared_preferences: ^2.3.2
-  package_info_plus: ^9.0.0
+  package_info_plus: ^10.1.0
   url_launcher: ^6.3.2
   path_provider: ^2.1.5
+  pocketbase: ^0.23.2 # (Or latest version)
+  google_sign_in: ^7.2.0
+  sign_in_with_apple: ^8.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
 
 flutter:
   uses-material-design: true
   assets:
     - assets/logo512.png
     - assets/dbmn.json
+
+

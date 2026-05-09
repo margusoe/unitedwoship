@@ -7,7 +7,7 @@ class SongManager {
   final lyricsNotifier = ValueNotifier<Song?>(null);
   final db = getIt<SongDatabase>();
 
-  Future<void> init(int songId) async {
+  Future<void> init(String songId) async {
     final lyrics = await db.getSong(songId);
     lyricsNotifier.value = lyrics;
   }

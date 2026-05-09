@@ -1,7 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:unitedwoship/app_state_manager.dart';
 import 'package:unitedwoship/infrastructure/song_database.dart';
-import 'package:unitedwoship/infrastructure/web_api.dart';
+import 'package:unitedwoship/infrastructure/pocketbase_service.dart'; // Changed
 import 'package:unitedwoship/screens/home/home_manager.dart';
 import 'package:unitedwoship/infrastructure/user_settings.dart';
 
@@ -12,5 +12,5 @@ void setupServiceLocator() {
   getIt.registerLazySingleton<SongDatabase>(() => SongDatabase());
   getIt.registerLazySingleton<HomeManager>(() => HomeManager());
   getIt.registerLazySingleton<UserSettings>(() => UserSettings());
-  getIt.registerLazySingleton<WebApi>(() => WebApi());
+  getIt.registerLazySingleton<PocketBaseService>(() => PocketBaseService());
 }

@@ -12,7 +12,7 @@ class HomeManager {
     songListNotifier.value = songs;
   }
 
-  Future<void> deleteSong(int songId) async {
+  Future<void> deleteSong(String songId) async {
     await _lyricsDatabase.deleteSong(songId);
     init();
   }

@@ -1,9 +1,10 @@
+// lib/screens/search/search_screen.dart
 import 'package:flutter/cupertino.dart';
 import 'package:unitedwoship/app_state_manager.dart';
 import 'package:unitedwoship/infrastructure/service_locator.dart';
 import 'package:unitedwoship/infrastructure/song.dart';
+import 'package:unitedwoship/infrastructure/song_database.dart'; // Replaced web_api
 import 'package:unitedwoship/infrastructure/user_settings.dart';
-import 'package:unitedwoship/infrastructure/web_api.dart';
 import 'package:unitedwoship/screens/song/song_screen.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -15,7 +16,7 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final appstatemanager = getIt<AppStateManager>();
-  final webApi = getIt<WebApi>();
+  final db = getIt<SongDatabase>(); // Get database directly
   final userSettings = getIt<UserSettings>();
   late Future<List<Song>> _futureSongs;
 
@@ -26,8 +27,8 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Future<List<Song>> _loadSongs() async {
-    await webApi.loadSongs();
-    return webApi.songs;
+    // Just fetch directly from SQLite
+    return await db.getAllSongs();
   }
 
   @override
@@ -58,7 +59,6 @@ class _SearchScreenState extends State<SearchScreen> {
                       } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                         return const Center(child: Text('No songs found.'));
                       } else {
-                        // If data is loaded successfully, display it in a ListView
                         final songs = snapshot.data!;
                         return ListView.builder(
                           itemCount: songs.length,
@@ -70,10 +70,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                 style: TextStyle(fontSize: fontSize),
                               ),
                               subtitle: Text(
-                                'Key: ${song.songkey}',
-                                style: TextStyle(
-                                    fontSize:
-                                        fontSize * 0.8), // Adjust as needed
+                                'Key: ${song.originalKey}', // Updated from songkey
+                                style: TextStyle(fontSize: fontSize * 0.8),
                               ),
                               onTap: () {
                                 Navigator.push(
